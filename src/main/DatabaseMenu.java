@@ -12,6 +12,7 @@ public class DatabaseMenu {
     private static final String DB_URL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/zlu28";
     private static final String DB_USER = "zlu28";
     private static final String DB_PASSWORD = "";
+    //setting your own pwd
 
 
 
