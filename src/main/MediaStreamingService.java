@@ -52,8 +52,122 @@ public class MediaStreamingService {
         }
     }
 
-    public void updateSong(int songId, String newTitle, int newDuration) {
-        // Implement the logic to update a song in the database
+    public void updateSong(int songId, String newSongTitle, String newDuration, String newGenres, Integer newPlayCount, String newLanguage, BigDecimal newRoyaltyRate, String newReleaseDate, String newReleaseCountry) {
+        String sql = "UPDATE Songs SET song_title = COALESCE(?, song_title), duration = COALESCE(?, duration), genres = COALESCE(?, genres), play_count = COALESCE(?, play_count), language = COALESCE(?, language), royalty_rate = COALESCE(?, royalty_rate), release_date = COALESCE(?, release_date), release_country = COALESCE(?, release_country) WHERE song_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (newSongTitle != null) {
+                statement.setString(1, newSongTitle);
+            } else {
+                statement.setNull(1, Types.VARCHAR);
+            }
+
+            if (newDuration != null) {
+                statement.setString(2, newDuration);
+            } else {
+                statement.setNull(2, Types.VARCHAR);
+            }
+
+            if (newGenres != null) {
+                statement.setString(3, newGenres);
+            } else {
+                statement.setNull(3, Types.VARCHAR);
+            }
+
+            if (newPlayCount != null)
+            {
+                statement.setInt(4, newPlayCount);
+            } else {
+                statement.setNull(4, Types.INTEGER);
+            }
+
+            if (newLanguage != null) {
+                statement.setString(5, newLanguage);
+            } else {
+                statement.setNull(5, Types.VARCHAR);
+            }
+
+            if (newRoyaltyRate != null) {
+                statement.setBigDecimal(6, newRoyaltyRate);
+            } else {
+                statement.setNull(6, Types.DECIMAL);
+            }
+
+            if (newReleaseDate != null) {
+                statement.setString(7, newReleaseDate);
+            } else {
+                statement.setNull(7, Types.VARCHAR);
+            }
+
+            if (newReleaseCountry != null) {
+                statement.setString(8, newReleaseCountry);
+            } else {
+                statement.setNull(8, Types.VARCHAR);
+            }
+
+            statement.setInt(9, songId);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Song updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update song.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }}
+
+
+    public void updateArtist(int artistId, String newArtistName, String newStatus, Integer newMonthlyListener, String newType, String newCountry, String newPrimaryGenre) {
+        String sql = "UPDATE Artists SET artist_name = COALESCE(?, artist_name), status = COALESCE(?, status), monthly_listener = COALESCE(?, monthly_listener), type = COALESCE(?, type), country = COALESCE(?, country), primary_genre = COALESCE(?, primary_genre) WHERE artist_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (newArtistName != null) {
+                statement.setString(1, newArtistName);
+            } else {
+                statement.setNull(1, Types.VARCHAR);
+            }
+
+            if (newStatus != null) {
+                statement.setString(2, newStatus);
+            } else {
+                statement.setNull(2, Types.VARCHAR);
+            }
+
+            if (newMonthlyListener != null) {
+                statement.setInt(3, newMonthlyListener);
+            } else {
+                statement.setNull(3, Types.INTEGER);
+            }
+
+            if (newType != null) {
+                statement.setString(4, newType);
+            } else {
+                statement.setNull(4, Types.VARCHAR);
+            }
+
+            if (newCountry != null) {
+                statement.setString(5, newCountry);
+            } else {
+                statement.setNull(5, Types.VARCHAR);
+            }
+
+            if (newPrimaryGenre != null) {
+                statement.setString(6, newPrimaryGenre);
+            } else {
+                statement.setNull(6, Types.VARCHAR);
+            }
+
+            statement.setInt(7, artistId);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Artist updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update artist.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void deleteSong(int songId) {

@@ -324,17 +324,50 @@ public class InformProcess {
 
 
                     break;
+
                 case 2:
                     System.out.print("Enter artist_id to update: ");
                     int updateArtistId = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.print("Enter new artist_name: ");
+
+                    System.out.print("Enter new artist_name (leave blank to keep current name): ");
                     String newArtistName = scanner.nextLine();
-                    System.out.print("Enter new status (active/retired): ");
-                    String newStatus = scanner.next();
-                    // Add other fields you want to update
-                    // ...
-                    //mediaStreamingService.updateArtist(updateArtistId, newArtistName, newStatus /*, other fields... */);
+                    if (newArtistName.isEmpty()) {
+                        newArtistName = null;
+                    }
+
+                    System.out.print("Enter new status (active/retired, leave blank to keep current status): ");
+                    String newStatus = scanner.nextLine();
+                    if (newStatus.isEmpty()) {
+                        newStatus = null;
+                    }
+
+                    System.out.print("Enter new monthly_listener (leave blank to keep current value): ");
+                    String newMonthlyListenerInput = scanner.nextLine();
+                    Integer newMonthlyListener = null;
+                    if (!newMonthlyListenerInput.isEmpty()) {
+                        newMonthlyListener = Integer.parseInt(newMonthlyListenerInput);
+                    }
+
+                    System.out.print("Enter new type (composer/musician/Band, leave blank to keep current type): ");
+                    String newType = scanner.nextLine();
+                    if (newType.isEmpty()) {
+                        newType = null;
+                    }
+
+                    System.out.print("Enter new country (leave blank to keep current country): ");
+                    String newCountry = scanner.nextLine();
+                    if (newCountry.isEmpty()) {
+                        newCountry = null;
+                    }
+
+                    System.out.print("Enter new primary_genre (leave blank to keep current primary_genre): ");
+                    String newPrimaryGenre = scanner.nextLine();
+                    if (newPrimaryGenre.isEmpty()) {
+                        newPrimaryGenre = null;
+                    }
+
+                    mediaStreamingService.updateArtist(updateArtistId, newArtistName, newStatus, newMonthlyListener, newType, newCountry, newPrimaryGenre);
                     break;
                 case 3:
                     System.out.print("Enter artist_id to delete: ");
@@ -562,8 +595,63 @@ public class InformProcess {
                     }
 
                     break;
+
                 case 2:
-                    // Implement update functionality for the song
+                    System.out.print("Enter song_id to update: ");
+                    int updateSongId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.print("Enter new song_title (or press Enter to keep current title): ");
+                    String newSongTitle = scanner.nextLine();
+                    if (newSongTitle.isEmpty()) {
+                        newSongTitle = null;
+                    }
+
+                    System.out.print("Enter new duration (or press Enter to keep current duration): ");
+                    String newDuration = scanner.nextLine();
+                    if (newDuration.isEmpty()) {
+                        newDuration = null;
+                    }
+
+                    System.out.print("Enter new genres (or press Enter to keep current genres): ");
+                    String newGenres = scanner.nextLine();
+                    if (newGenres.isEmpty()) {
+                        newGenres = null;
+                    }
+
+                    System.out.print("Enter new play_count (or press Enter to keep current play_count): ");
+                    String playCountInput = scanner.nextLine();
+                    Integer newPlayCount = null;
+                    if (!playCountInput.isEmpty()) {
+                        newPlayCount = Integer.parseInt(playCountInput);
+                    }
+
+                    System.out.print("Enter new language (or press Enter to keep current language): ");
+                    String newLanguage = scanner.nextLine();
+                    if (newLanguage.isEmpty()) {
+                        newLanguage = null;
+                    }
+
+                    System.out.print("Enter new royalty_rate (or press Enter to keep current royalty_rate): ");
+                    String royaltyRateInput = scanner.nextLine();
+                    BigDecimal newRoyaltyRate = null;
+                    if (!royaltyRateInput.isEmpty()) {
+                        newRoyaltyRate = new BigDecimal(royaltyRateInput);
+                    }
+
+                    System.out.print("Enter new release_date (or press Enter to keep current release_date): ");
+                    String newReleaseDate = scanner.nextLine();
+                    if (newReleaseDate.isEmpty()) {
+                        newReleaseDate = null;
+                    }
+
+                    System.out.print("Enter new release_country (or press Enter to keep current release_country): ");
+                    String newReleaseCountry = scanner.nextLine();
+                    if (newReleaseCountry.isEmpty()) {
+                        newReleaseCountry = null;
+                    }
+
+                    mediaStreamingService.updateSong(updateSongId, newSongTitle, newDuration, newGenres, newPlayCount, newLanguage, newRoyaltyRate, newReleaseDate, newReleaseCountry);
                     break;
                 case 3:
                     System.out.print("Enter Song Id to delete: ");
@@ -619,7 +707,7 @@ public class InformProcess {
                     System.out.print("Enter new song duration (in seconds): ");
                     int newDuration = scanner.nextInt();
                     scanner.nextLine();
-                    mediaStreamingService.updateSong(songId, newTitle, newDuration);
+                    //mediaStreamingService.updateSong(songId, newTitle, newDuration);
                     break;
                 case 3:
                     System.out.print("Enter host_id to delete: ");
