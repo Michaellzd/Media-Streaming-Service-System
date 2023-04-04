@@ -44,7 +44,7 @@ public class DatabaseMenu {
                         informProcess.informationProcessingMenu(mediaStreamingService, scanner);
                         break;
                     case 2:
-                        metadataAndRecordsMenu(mediaStreamingService, scanner);
+                        MetadataProcess.metadataAndRecordsMenu(mediaStreamingService, scanner);
                         break;
                     case 3:
                         paymentsMenu(mediaStreamingService, scanner);

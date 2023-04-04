@@ -4,6 +4,8 @@ package main;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -830,9 +832,81 @@ public class MediaStreamingService {
     }
 
 
-
-
     //host to podcast above
+
+
+
+    public List<String> findSongsByArtist(String artistName) {
+        List<String> songTitles = new ArrayList<>();
+
+        String sql = "SELECT s.song_title " +
+                "FROM Songs s, performed p, Artists ar " +
+                "WHERE s.song_id = p.song_id " +
+                "AND ar.artist_id = p.artist_id " +
+                "AND ar.artist_name = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, artistName);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String songTitle = resultSet.getString("song_title");
+                songTitles.add(songTitle);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        return songTitles;
+    }
+
+
+    public List<String> findSongsByAlbum(String albumName) {
+        List<String> songTitles = new ArrayList<>();
+
+        String sql = "SELECT s.song_title " +
+                "FROM Songs s, Album a " +
+                "WHERE a.album_id = s.album " +
+                "AND a.album_name = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, albumName);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String songTitle = resultSet.getString("song_title");
+                songTitles.add(songTitle);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        return songTitles;
+    }
+
+    public List<String> findEpisodesByPodcast(String podcastName) {
+        List<String> episodeTitles = new ArrayList<>();
+
+        String sql = "SELECT pe.episode_title " +
+                "FROM PodcastEpisodes pe, Podcast p " +
+                "WHERE pe.podcast = p.podcast_id " +
+                "AND p.podcast_name = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, podcastName);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String episodeTitle = resultSet.getString("episode_title");
+                episodeTitles.add(episodeTitle);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        return episodeTitles;
+    }
+
 
 
 
