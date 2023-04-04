@@ -12,13 +12,15 @@ public class InformProcess {
         do {
             System.out.println("Information Processing Menu");
             System.out.println("1. Manage Songs");
+            System.out.println("2. Manage Artists");
             System.out.println("3. Manage Podcast Hosts");
-
-            /*System.out.println("2. Manage Artists");
             System.out.println("4. Manage Podcast Episodes");
-            System.out.println("5. Assign Songs and Artists to Albums");
+            System.out.println("5. Assign Artists to Albums");
             System.out.println("6. Assign Artists to Record Labels");
-            System.out.println("7. Assign Podcast Episodes and Hosts to Podcasts");*/
+
+            /*System.out.println("4. Manage Podcast Episodes");
+           ;*/
+            System.out.println("7. Assign  Hosts to Podcasts");
             System.out.println("8. add User");
 
             System.out.println("9. List All Songs");
@@ -26,6 +28,11 @@ public class InformProcess {
             System.out.println("11. List All Podcasts");
             System.out.println("12. List All Podcast Host");
             System.out.println("13. List All Podcast Episodes");
+
+
+            System.out.println("14. add Record Label");
+            System.out.println("15. add Podcast");
+            System.out.println("16. add Album");
 
 
 
@@ -40,20 +47,34 @@ public class InformProcess {
                 case 1:
                     manageSongsMenu(mediaStreamingService, scanner);
                     break;
-                case 3:
-                    managePodcastHostsMenu(mediaStreamingService, scanner);
-                    break;
-                /*case 2:
+                case 2:
                     manageArtistsMenu(mediaStreamingService, scanner);
                     break;
                 case 3:
                     managePodcastHostsMenu(mediaStreamingService, scanner);
                     break;
+
                 case 4:
                     managePodcastEpisodesMenu(mediaStreamingService, scanner);
                     break;
                 case 5:
-                    assignSongsAndArtistsToAlbumsMenu(mediaStreamingService, scanner);
+                    assignArtistsToAlbumsMenu(mediaStreamingService, scanner);
+                    break;
+                    
+                    
+                case 6:
+                    assignArtistsToRecordLabels(mediaStreamingService, scanner);
+                    break;
+
+                case 7:
+                    assignHostsToPodcastsMenu(mediaStreamingService, scanner);
+                    break;
+
+
+                /*
+
+                case 5:
+                    assignArtistsToAlbumsMenu(mediaStreamingService, scanner);
                     break;
                 case 6:
                     assignArtistsToRecordLabelsMenu(mediaStreamingService, scanner);
@@ -79,10 +100,269 @@ public class InformProcess {
                 case 13:
                     DisplayPodcastEpisode(mediaStreamingService);
                     break;
-
+                case 14:
+                    addRecordLabel(mediaStreamingService,scanner);
+                    break;
+                case 15:
+                    addPodcast(mediaStreamingService,scanner);
+                    break;
+                case 16:
+                    addAlbum(mediaStreamingService,scanner);
+                    break;
 
             }
         } while (choice != 0);
+    }
+
+    private void assignHostsToPodcastsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        scanner.nextLine();
+
+        System.out.print("Enter podcast name: ");
+        String podcastName = scanner.nextLine();
+
+        System.out.print("Enter host name: ");
+        String hostName = scanner.nextLine();
+
+        int podcastId = mediaStreamingService.getPodcastIdByName(podcastName);
+        int hostId = mediaStreamingService.getHostIdByName(hostName);
+
+        if (podcastId != -1 && hostId != -1) {
+            mediaStreamingService.assignHostToPodcast(hostId, podcastId);
+        } else {
+            System.out.println("Podcast or host not found. Please try again.");
+        }
+    }
+
+    private void assignArtistsToAlbumsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        scanner.nextLine();
+        System.out.println("Enter artist name: ");
+        String artistName = scanner.nextLine();
+        System.out.println("Enter album name: ");
+        String albumName = scanner.nextLine();
+
+        int artistId = mediaStreamingService.getArtistIdByName(artistName);
+        int albumId = mediaStreamingService.getAlbumIdByName(albumName);
+
+        if (artistId != -1 && albumId != -1) {
+            mediaStreamingService.associateArtistWithAlbum(artistId, albumId);
+        } else {
+            System.out.println("Artist or album not found. Please try again.");
+        }
+    }
+
+    private void addAlbum(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        System.out.print("Enter Album Id: ");
+        int albumId = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        System.out.print("Enter Album Name: ");
+        String albumName = scanner.nextLine();
+
+        System.out.print("Enter Track Number: ");
+        int trackNumber = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter Release Year: ");
+        String releaseYear = scanner.nextLine();
+
+        System.out.print("Enter Edition (collector's edition/limited/special): ");
+        String edition = scanner.nextLine();
+
+        mediaStreamingService.addAlbum(albumId, albumName, trackNumber, releaseYear, edition);
+    }
+
+    private void managePodcastEpisodesMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        int choice;
+        do {
+            System.out.println("Manage Podcast Episodes Menu");
+            System.out.println("1. Add Podcast Episode");
+            System.out.println("2. Update Podcast Episode");
+            System.out.println("3. Delete Podcast Episode");
+            System.out.println("0. Back to Information Processing Menu");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter podcast_episode_id: ");
+                    int podcast_episode_id = scanner.nextInt();
+
+                    System.out.println("Enter duration: ");
+                    String duration = scanner.next();
+
+                    scanner.nextLine(); // Consume the newline character
+
+                    System.out.println("Enter episode_title: ");
+                    String episode_title = scanner.nextLine();
+
+
+                    System.out.println("Enter release_date: ");
+                    String release_date = scanner.next();
+                    System.out.println("Enter listening_count: ");
+                    int listening_count = scanner.nextInt();
+                    System.out.println("Enter advertisement_count (Input 0 if there is no advertisement count ): ");
+                    int advertisement_count = 0;
+                    if (scanner.hasNextInt()) {
+                        advertisement_count = scanner.nextInt();
+                    } else {
+                        scanner.nextLine(); // Consume the newline character
+                    }
+
+                    scanner.nextLine(); // Consume the newline character
+                    System.out.println("Enter this episode to a podcast, and the name of the postcast is : ");
+                    String podcast_title = scanner.nextLine();
+
+
+                    int podcast_id = mediaStreamingService.getPodcastIdByName(podcast_title);
+
+                    mediaStreamingService.addPodcastEpisode(podcast_episode_id, episode_title, duration, release_date, listening_count, advertisement_count, podcast_id);
+                    break;
+                case 2:
+                    System.out.print("Enter podcast_episode_id to update: ");
+                    int updateEpisodeId = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Enter new episode_title: ");
+                    String newEpisodeTitle = scanner.nextLine();
+                    System.out.print("Enter new duration: ");
+                    String newDuration = scanner.next();
+                    // Add other fields you want to update
+                    // ...
+                    // mediaStreamingService.updatePodcastEpisode(updateEpisodeId, newEpisodeTitle, newDuration /*, other fields... */);
+                    break;
+                case 3:
+                    System.out.print("Enter podcast_episode_id to delete: ");
+                    int deleteEpisodeId = scanner.nextInt();
+                    scanner.nextLine();
+                    mediaStreamingService.deletePodcastEpisode(deleteEpisodeId);
+                    break;
+            }
+        } while (choice != 0);
+    }
+
+
+
+    private void addPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        System.out.print("Enter Podcast Id: ");
+        int podcastId = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        System.out.print("Enter Podcast Name: ");
+        String podcastName = scanner.nextLine();
+
+        System.out.print("Enter Total Subscribers: ");
+        int totalSubscribers = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter Country: ");
+        String country = scanner.nextLine();
+
+        System.out.print("Enter Episode Count: ");
+        int episodeCount = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter Genres: ");
+        String genres = scanner.nextLine();
+
+        System.out.print("Enter Language: ");
+        String language = scanner.nextLine();
+
+        System.out.print("Enter Sponsors (optional, press Enter to skip): ");
+        String sponsors = scanner.nextLine();
+
+        System.out.print("Enter Rating: ");
+        double rating = scanner.nextDouble();
+        scanner.nextLine();
+
+        mediaStreamingService.addPodcast(podcastId, podcastName, totalSubscribers, country, episodeCount, genres, language, sponsors, rating);
+    }
+
+    private void assignArtistsToRecordLabels(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        System.out.println("Enter artist name: ");
+        String artistName = scanner.next();
+        scanner.nextLine();
+        System.out.println("Enter record label name: ");
+        String recordLabelName = scanner.nextLine();
+
+
+        int recordLabelId = mediaStreamingService.getRecordLabelIdByName(recordLabelName);
+        if (recordLabelId != -1) {
+            mediaStreamingService.updateArtistRecordLabel(artistName, recordLabelId);
+        } else {
+            System.out.println("Record label not found. Please try again.");
+        }
+
+    }
+
+    private void manageArtistsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
+
+        int choice;
+        do {
+            System.out.println("Manage Artists Menu");
+            System.out.println("1. Add Artist");
+            System.out.println("2. Update Artist");
+            System.out.println("3. Delete Artist");
+            System.out.println("0. Back to Information Processing Menu");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter artist_id: ");
+                    int artist_id = scanner.nextInt();
+                    System.out.println("Enter artist_name: ");
+                    String artist_name = scanner.next();
+                    System.out.println("Enter status (active/retired): ");
+                    String status = scanner.next();
+                    System.out.println("Enter monthly_listener: ");
+                    int monthly_listener = scanner.nextInt();
+                    System.out.println("Enter type (composer/musician/Band): ");
+                    String type = scanner.next();
+                    System.out.println("Enter country: ");
+                    String country = scanner.next();
+                    System.out.println("Enter primary_genre: ");
+                    String primary_genre = scanner.next();
+
+
+                    mediaStreamingService.addArtist(artist_id, artist_name, status, monthly_listener, type, country, primary_genre);
+
+
+
+                    break;
+                case 2:
+                    System.out.print("Enter artist_id to update: ");
+                    int updateArtistId = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Enter new artist_name: ");
+                    String newArtistName = scanner.nextLine();
+                    System.out.print("Enter new status (active/retired): ");
+                    String newStatus = scanner.next();
+                    // Add other fields you want to update
+                    // ...
+                    //mediaStreamingService.updateArtist(updateArtistId, newArtistName, newStatus /*, other fields... */);
+                    break;
+                case 3:
+                    System.out.print("Enter artist_id to delete: ");
+                    int deleteArtistId = scanner.nextInt();
+                    scanner.nextLine();
+                    mediaStreamingService.deleteArtist(deleteArtistId);
+                    break;
+            }
+        } while (choice != 0);
+    }
+
+    private void addRecordLabel(MediaStreamingService mediaStreamingService,Scanner scanner) {
+        System.out.print("Enter Record Label Id: ");
+        int recordLabelId = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        System.out.print("Enter Record Label Name: ");
+        String recordLabelName = scanner.nextLine();
+
+        mediaStreamingService.addRecordLabel(recordLabelId,recordLabelName);
     }
 
     private void DisplayPodcastEpisode(MediaStreamingService mediaStreamingService) throws SQLException {
@@ -211,8 +491,97 @@ public class InformProcess {
 
 
 
-    public void manageSongsMenu(MediaStreamingService mediaStreamingService, Scanner scanner){
+    private void manageSongsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
+        int choice;
+        do {
+            System.out.println("Manage Songs Menu");
+            System.out.println("1. Add Song");
+            System.out.println("2. Update Song");
+            System.out.println("3. Delete Song");
+            System.out.println("0. Back to Information Processing Menu");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
 
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Song Id: ");
+                    int songId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.print("Enter Song Title: ");
+                    String songTitle = scanner.nextLine();
+
+                    System.out.print("Enter Duration: ");
+                    String duration = scanner.nextLine();
+
+                    System.out.print("Enter Genres: ");
+                    String genres = scanner.nextLine();
+
+                    System.out.print("Enter Play Count: ");
+                    int playCount = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.print("Enter Language: ");
+                    String language = scanner.nextLine();
+
+                    System.out.print("Enter Royalty Rate: ");
+                    double royaltyRate = scanner.nextDouble();
+                    scanner.nextLine();
+
+                    System.out.print("Enter Release Date: ");
+                    String releaseDate = scanner.nextLine();
+
+                    System.out.print("Enter Release Country: ");
+                    String releaseCountry = scanner.nextLine();
+
+                    System.out.print("Enter Album Name (optional, press Enter to skip): ");
+                    String albumNameInput = scanner.nextLine();
+                    Integer albumId = null;
+                    if (!albumNameInput.isEmpty()) {
+                        albumId = mediaStreamingService.getAlbumIdByName(albumNameInput);
+                        if (albumId == -1) {
+                            System.out.println("Album not found. Please try again.");
+                            continue;
+                        }
+                    }
+
+                    mediaStreamingService.addSong(songId, songTitle, duration, genres, playCount, language, royaltyRate, releaseDate, releaseCountry, albumId);
+
+                    System.out.print("Enter number of artists performing the song: ");
+                    int numberOfArtists = scanner.nextInt();
+                    scanner.nextLine();
+
+                    for (int i = 0; i < numberOfArtists; i++) {
+                        System.out.print("Enter Artist Name (Artist " + (i + 1) + "): ");
+                        String artistName = scanner.nextLine();
+                        int artistId = mediaStreamingService.getArtistIdByName(artistName);
+
+                        if (artistId == -1) {
+                            System.out.println("Artist not found. Please try again.");
+                            i--; // Repeat the loop for the same artist
+                            continue;
+                        }
+
+                        System.out.print("Is the artist a collaborator? (1 for main singer, 0 for collaborator): ");
+                        String isCollaborator = scanner.nextLine();
+
+                        mediaStreamingService.assignArtistToSong(isCollaborator, songId, artistId);
+                    }
+
+                    break;
+                case 2:
+                    // Implement update functionality for the song
+                    break;
+                case 3:
+                    System.out.print("Enter Song Id to delete: ");
+                    int deleteSongId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    mediaStreamingService.deleteSong(deleteSongId);
+                    break;
+            }
+        } while (choice != 0);
     }
 
     public void managePodcastHostsMenu(MediaStreamingService mediaStreamingService, Scanner scanner){
@@ -261,10 +630,11 @@ public class InformProcess {
                     mediaStreamingService.updateSong(songId, newTitle, newDuration);
                     break;
                 case 3:
-                    System.out.print("Enter song ID to delete: ");
-                    int deleteSongId = scanner.nextInt();
+                    System.out.print("Enter host_id to delete: ");
+                    int deleteHostId = scanner.nextInt();
                     scanner.nextLine();
-                    mediaStreamingService.deleteSong(deleteSongId);
+                    mediaStreamingService.deletePodcastHost(deleteHostId);
+                    System.out.println("Podcast host deleted successfully.");
                     break;
             }
         } while (choice != 0);
