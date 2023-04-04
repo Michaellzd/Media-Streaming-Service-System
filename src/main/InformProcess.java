@@ -71,17 +71,9 @@ public class InformProcess {
                     break;
 
 
-                /*
 
-                case 5:
-                    assignArtistsToAlbumsMenu(mediaStreamingService, scanner);
-                    break;
-                case 6:
-                    assignArtistsToRecordLabelsMenu(mediaStreamingService, scanner);
-                    break;
-                case 7:
-                    assignPodcastEpisodesAndHostsToPodcastsMenu(mediaStreamingService, scanner);
-                    break;*/
+
+
                 case 8:
                     addUser(mediaStreamingService, scanner);
                     break;
