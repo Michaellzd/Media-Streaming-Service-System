@@ -1,4 +1,4 @@
-# 540_project
-540_project3
+# Media-Streaming-Service-System
 
-Streaming Media Service
+
+A media streaming service. This is an audio and media streaming service, like Spotify or Apple Music.
