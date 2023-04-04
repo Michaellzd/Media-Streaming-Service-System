@@ -71,9 +71,6 @@ public class InformProcess {
                     break;
 
 
-
-
-
                 case 8:
                     addUser(mediaStreamingService, scanner);
                     break;
@@ -213,16 +210,51 @@ public class InformProcess {
                     break;
                 case 2:
                     System.out.print("Enter podcast_episode_id to update: ");
-                    int updateEpisodeId = scanner.nextInt();
+                    int updatePodcastEpisodeId = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.print("Enter new episode_title: ");
+
+                    System.out.print("Enter new episode_title (leave blank to keep current title): ");
                     String newEpisodeTitle = scanner.nextLine();
-                    System.out.print("Enter new duration: ");
-                    String newDuration = scanner.next();
-                    // Add other fields you want to update
-                    // ...
-                    // mediaStreamingService.updatePodcastEpisode(updateEpisodeId, newEpisodeTitle, newDuration /*, other fields... */);
+                    if (newEpisodeTitle.isEmpty()) {
+                        newEpisodeTitle = null;
+                    }
+
+                    System.out.print("Enter new duration (leave blank to keep current duration): ");
+                    String newDuration = scanner.nextLine();
+                    if (newDuration.isEmpty()) {
+                        newDuration = null;
+                    }
+
+                    System.out.print("Enter new release_date (leave blank to keep current release_date, format: yyyy-MM-dd): ");
+                    String newReleaseDate = scanner.nextLine();
+                    if (newReleaseDate.isEmpty()) {
+                        newReleaseDate = null;
+                    }
+
+                    System.out.print("Enter new listening_count (leave blank to keep current value): ");
+                    String newListeningCountInput = scanner.nextLine();
+                    Integer newListeningCount = null;
+                    if (!newListeningCountInput.isEmpty()) {
+                        newListeningCount = Integer.parseInt(newListeningCountInput);
+                    }
+
+                    System.out.print("Enter new advertisement_count (leave blank to keep current value): ");
+                    String newAdvertisementCountInput = scanner.nextLine();
+                    Integer newAdvertisementCount = null;
+                    if (!newAdvertisementCountInput.isEmpty()) {
+                        newAdvertisementCount = Integer.parseInt(newAdvertisementCountInput);
+                    }
+
+                    System.out.print("Enter new podcast (leave blank to keep current podcast): ");
+                    String newPodcastInput = scanner.nextLine();
+                    Integer newPodcast = null;
+                    if (!newPodcastInput.isEmpty()) {
+                        newPodcast = Integer.parseInt(newPodcastInput);
+                    }
+
+                    mediaStreamingService.updatePodcastEpisode(updatePodcastEpisodeId, newEpisodeTitle, newDuration, newReleaseDate, newListeningCount, newAdvertisementCount, newPodcast);
                     break;
+
                 case 3:
                     System.out.print("Enter podcast_episode_id to delete: ");
                     int deleteEpisodeId = scanner.nextInt();
@@ -699,16 +731,43 @@ public class InformProcess {
                     mediaStreamingService.addPodcastHost(host_id,firstname,lastname,phone,email,city);
                     break;
                 case 2:
-                    System.out.print("Enter song ID to update: ");
-                    int songId = scanner.nextInt();
+                    System.out.print("Enter host_id to update: ");
+                    int updateHostId = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.print("Enter new song title: ");
-                    String newTitle = scanner.nextLine();
-                    System.out.print("Enter new song duration (in seconds): ");
-                    int newDuration = scanner.nextInt();
-                    scanner.nextLine();
-                    //mediaStreamingService.updateSong(songId, newTitle, newDuration);
+
+                    System.out.print("Enter new first_name (leave blank to keep current name): ");
+                    String newFirstName = scanner.nextLine();
+                    if (newFirstName.isEmpty()) {
+                        newFirstName = null;
+                    }
+
+                    System.out.print("Enter new last_name (leave blank to keep current name): ");
+                    String newLastName = scanner.nextLine();
+                    if (newLastName.isEmpty()) {
+                        newLastName = null;
+                    }
+
+                    System.out.print("Enter new phone (leave blank to keep current phone): ");
+                    String newPhone = scanner.nextLine();
+                    if (newPhone.isEmpty()) {
+                        newPhone = null;
+                    }
+
+                    System.out.print("Enter new email (leave blank to keep current email): ");
+                    String newEmail = scanner.nextLine();
+                    if (newEmail.isEmpty()) {
+                        newEmail = null;
+                    }
+
+                    System.out.print("Enter new city (leave blank to keep current city): ");
+                    String newCity = scanner.nextLine();
+                    if (newCity.isEmpty()) {
+                        newCity = null;
+                    }
+
+                    mediaStreamingService.updatePodcastHost(updateHostId, newFirstName, newLastName, newPhone, newEmail, newCity);
                     break;
+
                 case 3:
                     System.out.print("Enter host_id to delete: ");
                     int deleteHostId = scanner.nextInt();

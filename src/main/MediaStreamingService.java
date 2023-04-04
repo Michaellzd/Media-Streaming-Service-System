@@ -116,6 +116,105 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }}
 
+    public void updatePodcastHost(int hostId, String newFirstName, String newLastName, String newPhone, String newEmail, String newCity) {
+        String sql = "UPDATE PodcastHosts SET first_name = COALESCE(?, first_name), last_name = COALESCE(?, last_name), phone = COALESCE(?, phone), email = COALESCE(?, email), city = COALESCE(?, city) WHERE host_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (newFirstName != null) {
+                statement.setString(1, newFirstName);
+            } else {
+                statement.setNull(1, Types.VARCHAR);
+            }
+
+            if (newLastName != null) {
+                statement.setString(2, newLastName);
+            } else {
+                statement.setNull(2, Types.VARCHAR);
+            }
+
+            if (newPhone != null) {
+                statement.setString(3, newPhone);
+            } else {
+                statement.setNull(3, Types.VARCHAR);
+            }
+
+            if (newEmail != null) {
+                statement.setString(4, newEmail);
+            } else {
+                statement.setNull(4, Types.VARCHAR);
+            }
+
+            if (newCity != null) {
+                statement.setString(5, newCity);
+            } else {
+                statement.setNull(5, Types.VARCHAR);
+            }
+
+            statement.setInt(6, hostId);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Podcast host updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update podcast host.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void updatePodcastEpisode(int podcastEpisodeId, String newEpisodeTitle, String newDuration, String newReleaseDate, Integer newListeningCount, Integer newAdvertisementCount, Integer newPodcast) {
+        String sql = "UPDATE PodcastEpisodes SET episode_title = COALESCE(?, episode_title), duration = COALESCE(?, duration), release_date = COALESCE(?, release_date), listening_count = COALESCE(?, listening_count), advertisement_count = COALESCE(?, advertisement_count), podcast = COALESCE(?, podcast) WHERE podcast_episode_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (newEpisodeTitle != null) {
+                statement.setString(1, newEpisodeTitle);
+            } else {
+                statement.setNull(1, Types.VARCHAR);
+            }
+
+            if (newDuration != null) {
+                statement.setString(2, newDuration);
+            } else {
+                statement.setNull(2, Types.VARCHAR);
+            }
+
+            if (newReleaseDate != null) {
+                statement.setString(3, newReleaseDate);
+            } else {
+                statement.setNull(3, Types.VARCHAR);
+            }
+
+            if (newListeningCount != null) {
+                statement.setInt(4, newListeningCount);
+            } else {
+                statement.setNull(4, Types.INTEGER);
+            }
+
+            if (newAdvertisementCount != null) {
+                statement.setInt(5, newAdvertisementCount);
+            } else {
+                statement.setNull(5, Types.INTEGER);
+            }
+
+            if (newPodcast != null) {
+                statement.setInt(6, newPodcast);
+            } else {
+                statement.setNull(6, Types.INTEGER);
+            }
+
+            statement.setInt(7, podcastEpisodeId);
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Podcast episode updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update podcast episode.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 
     public void updateArtist(int artistId, String newArtistName, String newStatus, Integer newMonthlyListener, String newType, String newCountry, String newPrimaryGenre) {
         String sql = "UPDATE Artists SET artist_name = COALESCE(?, artist_name), status = COALESCE(?, status), monthly_listener = COALESCE(?, monthly_listener), type = COALESCE(?, type), country = COALESCE(?, country), primary_genre = COALESCE(?, primary_genre) WHERE artist_id = ?";
