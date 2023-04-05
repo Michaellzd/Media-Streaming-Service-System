@@ -35,6 +35,7 @@ public class DatabaseMenu {
                 choice = scanner.nextInt();
 
                 MediaStreamingService mediaStreamingService = new MediaStreamingService(connection);
+                PaymentService paymentService = new PaymentService(connection);
                 InformProcess informProcess=new InformProcess();
                 ReportProcess reportProcess=new ReportProcess();
 
@@ -49,7 +50,7 @@ public class DatabaseMenu {
                         paymentsMenu(mediaStreamingService, scanner);
                         break;
                     case 4:
-                        reportProcess.reportsMenu(mediaStreamingService, scanner);
+                        reportProcess.reportsMenu(mediaStreamingService, paymentService, scanner);
                         break;
                 }
             } while (choice != 0);
