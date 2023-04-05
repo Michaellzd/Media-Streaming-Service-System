@@ -17,8 +17,6 @@ public class MediaStreamingService {
         this.connection = connection;
     }
 
-
-
     public void addSong(int songId, String songTitle, String duration, String genres, int playCount, String language, double royaltyRate, String releaseDate, String releaseCountry, Integer albumId) {
         String sql = "INSERT INTO Songs (song_id, song_title, duration, genres, play_count, language, royalty_rate, release_date, release_country, album) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -116,7 +114,8 @@ public class MediaStreamingService {
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
-        }}
+        }
+    }
 
     public void updatePodcastHost(int hostId, String newFirstName, String newLastName, String newPhone, String newEmail, String newCity) {
         String sql = "UPDATE PodcastHosts SET first_name = COALESCE(?, first_name), last_name = COALESCE(?, last_name), phone = COALESCE(?, phone), email = COALESCE(?, email), city = COALESCE(?, city) WHERE host_id = ?";
@@ -311,7 +310,6 @@ public class MediaStreamingService {
         }
     }
 
-
     public void deletePodcastHost(int hostId) {
         // Remove podcast associations in the 'hosted' table
         String sqlRemovePodcasts = "DELETE FROM hosted WHERE host_id = ?";
@@ -394,8 +392,6 @@ public class MediaStreamingService {
 
     }
 
-
-
     public void addPodcastHost(int host_id, String first_name,String last_name,String phone,String email,String city){
 
         // Implement the logic to delete a song from the database
@@ -424,7 +420,6 @@ public class MediaStreamingService {
         }
 
     }
-
 
     public ResultSet listAllSongs() throws SQLException {
 
@@ -566,7 +561,6 @@ public class MediaStreamingService {
         }
 
     }
-
     //get Record label的id 用于assign
     public int getRecordLabelIdByName(String record_label_name) {
         String sql = "SELECT record_label_id FROM RecordLabel WHERE record_label_name = ?";
@@ -589,7 +583,6 @@ public class MediaStreamingService {
 
         return recordLabelId;
     }
-
 
     public void updateArtistRecordLabel(String artistName, int recordLabelId) {
         String sql = "UPDATE Artists SET record_label = ? WHERE artist_name = ?";
@@ -715,7 +708,6 @@ public class MediaStreamingService {
 
     }
 
-
     public int getArtistIdByName(String artistName) {
         String sql = "SELECT artist_id FROM Artists WHERE artist_name = ?";
 
@@ -750,9 +742,7 @@ public class MediaStreamingService {
         return -1;
     }
 
-
     //art to album above
-
 
     public void addPodcastEpisode(int podcast_episode_id, String episode_title, String duration, String release_date, int listening_count, int advertisement_count, int podcast_id) {
         String sql = "INSERT INTO PodcastEpisodes (podcast_episode_id, episode_title, duration, release_date, listening_count, advertisement_count, podcast) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -777,7 +767,6 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
 
     public void addAlbum(int album_id, String album_name, int track_number, String release_year, String edition) {
         String sql = "INSERT INTO Album (album_id, album_name, track_number, release_year, edition) VALUES (?, ?, ?, ?, ?)";
@@ -831,10 +820,7 @@ public class MediaStreamingService {
         }
     }
 
-
     //host to podcast above
-
-
 
     public List<String> findSongsByArtist(String artistName) {
         List<String> songTitles = new ArrayList<>();
@@ -859,7 +845,6 @@ public class MediaStreamingService {
 
         return songTitles;
     }
-
 
     public List<String> findSongsByAlbum(String albumName) {
         List<String> songTitles = new ArrayList<>();
@@ -907,9 +892,93 @@ public class MediaStreamingService {
         return episodeTitles;
     }
 
+    //  manually input
 
+    public void updatePlayCountForSongs(int songId, int playCount){
+        updateSong(songId,null,null,null,playCount,null,null,null,null);
+    }
+    public void updatePlayCountForArtist(int artistId, int playCount){
+        updateArtist(artistId,null,null,playCount,null,null,null);
+    }
+    // count through listened records table, only sum up current month record.
 
-
-
-
+    public void updateMonthlyListenerForSongs(){
+        String sql = "UPDATE Songs\n" +
+                "SET play_count = IFNULL((\n" +
+                "  SELECT COUNT(*)\n" +
+                "  FROM listenedSong\n" +
+                "  WHERE listenedSong.song_id = Songs.song_id\n" +
+                "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  GROUP BY song_id\n" +
+                "),0) ";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Song Monthly Listener updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update.");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void updateMonthlyListenerForArtists(){
+        String sql = "UPDATE Artists a\n" +
+                "SET monthly_listener = IFNULL((\n" +
+                "  SELECT COUNT(*)\n" +
+                "  FROM listenedSong l\n" +
+                "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" +
+                "  WHERE p.artist_id  = a.artist_id \n" +
+                "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  GROUP BY p.artist_id\n" +
+                "),0)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Artist Monthly Listener updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update.");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void updateTotalCountOfSubscribers(){
+        String sql = "UPDATE Podcast p \n" +
+                " SET total_subscribers = IFNULL((\n" +
+                "\tSELECT COUNT(*)\n" +
+                "\tFROM subscribedPodcast s\n" +
+                "\tWHERE p.podcast_id = s.podcast_id \n" +
+                "\tGROUP BY p.podcast_id \n" +
+                "),0); ";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Subscribers updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update.");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void updateTheAvgRatingOfPodcast(){
+        String sql = "UPDATE Podcast p\n" +
+                " SET rating = IFNULL((\n" +
+                " \tSELECT AVG(rating)\n" +
+                " \tFROM ratedPodcast r\n" +
+                " \tWHERE r.podcast_id = p.podcast_id \n" +
+                " \tGROUP BY r.podcast_id \n" +
+                "),0); ";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Rating updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update.");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 }
