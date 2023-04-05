@@ -8,14 +8,14 @@ public class MetadataProcess {
         int choice;
         do {
             System.out.println("Metadata and Records Menu");
-            /*System.out.println("1. Enter play count for songs");
+            System.out.println("1. Enter play count for songs");
             System.out.println("2. Update play count for songs");
             System.out.println("3. Enter the count of monthly listeners for artists");
             System.out.println("4. Update the count of monthly listeners for artists");
             System.out.println("5. Enter the total count of subscribers and ratings for podcasts");
             System.out.println("6. Update the total count of subscribers and ratings for podcasts");
             System.out.println("7. Enter the listening count for podcast episodes");
-            System.out.println("8. Update the listening count for podcast episodes");*/
+            System.out.println("8. Update the listening count for podcast episodes");
             System.out.println("9. Find songs given artist");
             System.out.println("10. Find songs given album");
             System.out.println("11. Find podcast episodes given podcast");
@@ -24,22 +24,21 @@ public class MetadataProcess {
             choice = scanner.nextInt();
 
             switch (choice) {
-
                 case 9:
                     findSongsGivenArtist(mediaStreamingService, scanner);
-                    break; 
-                    
-                    case 10:
+                    break;
+
+                case 10:
                     findSongsGivenAlbum(mediaStreamingService, scanner);
                     break;
-                    
-                    case 11:
+
+                case 11:
                     findPodcastEpisodesGivenPodcast(mediaStreamingService, scanner);
                     break;
                 /*case 1:
                     enterSongPlayCount(metadataService, scanner);
                     break;
-                case 2:
+                  case 2:
                     updateSongPlayCount(metadataService, scanner);
                     break;
                 case 3:
@@ -111,4 +110,5 @@ public class MetadataProcess {
             System.out.println(songTitle);
         }
     }
+
 }

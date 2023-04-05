@@ -35,10 +35,6 @@ public class InformProcess {
             System.out.println("16. add Album");
 
 
-
-
-
-
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();

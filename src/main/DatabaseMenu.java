@@ -12,6 +12,7 @@ public class DatabaseMenu {
     private static final String DB_URL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/pwang25";
     private static final String DB_USER = "pwang25";
     private static final String DB_PASSWORD = "200421429";
+
     //setting your own pwd
 
 
@@ -57,7 +58,6 @@ public class DatabaseMenu {
         catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
-
 
 
     }
