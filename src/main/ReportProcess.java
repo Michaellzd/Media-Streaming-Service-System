@@ -18,7 +18,9 @@ public class ReportProcess {
             System.out.println("5. Report all songs  given an album");
             System.out.println("6. Report podcast episodes given an podcast.");
             System.out.println("7. Report total payments made out to record labels per given time period.");
+            System.out.println("8. Report total payments made out to artists per given time period.");
             System.out.println("0. Back to Main Menu");
+
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
 
@@ -43,6 +45,9 @@ public class ReportProcess {
                     break;
                 case 7:
                     getPeriodPaymentToRecordLabel(paymentService, scanner);
+                    break;
+                case 8:
+                    getPeriodPaymentToArtist(paymentService, scanner);
                     break;
 
             }
@@ -193,6 +198,34 @@ public class ReportProcess {
 
                 System.out.printf("Record Label: %s%n Total Payment: %s%n",
                         recordLabelName, totalPayment);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getPeriodPaymentToArtist(PaymentService paymentService, Scanner scanner) throws SQLException {
+
+        System.out.println("Report total payments made out to artists per given time period:");
+        System.out.println("Please format the date as YYYY-MM-DD, e.g. 2023-03-08.");
+
+        System.out.println("Input start date:");
+        String start = scanner.next();
+        if (!isValidDateString(start)) return;
+       
+        System.out.println("Input end date:");
+        String end = scanner.next();
+        if (!isValidDateString(end)) return;
+     
+        ResultSet resultSet = paymentService.getPeriodPaymentToArtist(start, end);
+
+        try {
+            while (resultSet.next()) {
+                String artistName = resultSet.getString("artist_name");
+                double totalPayment = resultSet.getDouble("total_payment");
+
+                System.out.printf("Artist Name: %s%n Total Payment: %s%n",
+                artistName, totalPayment);
             }
         } catch (SQLException e) {
             e.printStackTrace();
