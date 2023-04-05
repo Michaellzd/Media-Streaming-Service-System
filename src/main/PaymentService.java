@@ -43,4 +43,21 @@ public class PaymentService {
         }
         return resultSet;
     }
+
+    public ResultSet getPeriodPaymentToHost(String startDate, String endDate) {
+        ResultSet resultSet = null;
+        String sql = "SELECT PodcastHosts.first_name, PodcastHosts.last_name, SUM(paidHost.amount) total_payment " +
+                    "FROM paidHost " +
+                    "INNER JOIN PodcastHosts ON paidHost.paid_host_id = PodcastHosts.host_id " +
+                    "WHERE paidHost.date BETWEEN ? AND ? " +
+                    "GROUP BY PodcastHosts.host_id";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, startDate);
+            statement.setString(2, endDate);
+            resultSet = statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return resultSet;
+    }
 }

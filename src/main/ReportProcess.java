@@ -19,6 +19,7 @@ public class ReportProcess {
             System.out.println("6. Report podcast episodes given an podcast.");
             System.out.println("7. Report total payments made out to record labels per given time period.");
             System.out.println("8. Report total payments made out to artists per given time period.");
+            System.out.println("9. Report total payments made out to hosts per given time period.");
             System.out.println("0. Back to Main Menu");
 
             System.out.print("Enter your choice: ");
@@ -48,6 +49,9 @@ public class ReportProcess {
                     break;
                 case 8:
                     getPeriodPaymentToArtist(paymentService, scanner);
+                    break;
+                case 9:
+                    getPeriodPaymentToHost(paymentService, scanner);
                     break;
 
             }
@@ -226,6 +230,35 @@ public class ReportProcess {
 
                 System.out.printf("Artist Name: %s%n Total Payment: %s%n",
                 artistName, totalPayment);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getPeriodPaymentToHost(PaymentService paymentService, Scanner scanner) throws SQLException {
+
+        System.out.println("Report total payments made out to hosts per given time period:");
+        System.out.println("Please format the date as YYYY-MM-DD, e.g. 2023-03-08.");
+
+        System.out.println("Input start date:");
+        String start = scanner.next();
+        if (!isValidDateString(start)) return;
+       
+        System.out.println("Input end date:");
+        String end = scanner.next();
+        if (!isValidDateString(end)) return;
+     
+        ResultSet resultSet = paymentService.getPeriodPaymentToHost(start, end);
+
+        try {
+            while (resultSet.next()) {
+                String first_name = resultSet.getString("first_name");
+                String last_name = resultSet.getString("last_name");
+                double totalPayment = resultSet.getDouble("total_payment");
+
+                System.out.printf("Host Name: %s %s%n Total Payment: %s%n",
+                first_name, last_name, totalPayment);
             }
         } catch (SQLException e) {
             e.printStackTrace();
