@@ -6,7 +6,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
     public MaintainPaymentsService(Connection connection) {
         super(connection);
     }
-    public ResultSet monthlyPaymentForGivenSong(int songId){
+
+    public ResultSet monthlyPaymentForGivenSong(int songId) {
         String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m'), s.song_title \n" +
                 "  FROM listenedSong l LEFT JOIN Songs s ON l.song_id =s.song_id \n" +
                 "  WHERE s.song_id = ?\n" +
@@ -76,7 +77,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
         PreparedStatement sm1 = null;
         PreparedStatement sm2 = null;
 
-        try{
+        try {
             sm1 = connection.prepareStatement(sql1);
             sm2 = connection.prepareStatement(sql2);
             if (streamingAccountId != null) {
@@ -101,7 +102,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 sm1.setNull(2, Types.INTEGER);
             }
 
-            int rowsAffected = sm1.executeUpdate()+sm2.executeUpdate();
+            int rowsAffected = sm1.executeUpdate() + sm2.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Paid successfully.");
             } else {
@@ -140,7 +141,9 @@ public class MaintainPaymentsService extends MediaStreamingService {
         PreparedStatement sm1 = null;
         PreparedStatement sm2 = null;
 
-        try{
+        try {
+            connection.setAutoCommit(false);
+
             sm1 = connection.prepareStatement(sql1);
             sm2 = connection.prepareStatement(sql2);
             if (streamingAccountId != null) {
@@ -165,7 +168,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 sm1.setNull(2, Types.INTEGER);
             }
 
-            int rowsAffected = sm1.executeUpdate()+sm2.executeUpdate();
+            int rowsAffected = sm1.executeUpdate() + sm2.executeUpdate();
+            connection.commit();
             if (rowsAffected > 0) {
                 System.out.println("Paid successfully.");
             } else {
@@ -178,6 +182,18 @@ public class MaintainPaymentsService extends MediaStreamingService {
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
+            try {
+                connection.rollback();
+                System.out.println("Rollback successful");
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
