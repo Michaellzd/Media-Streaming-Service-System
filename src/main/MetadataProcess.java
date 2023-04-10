@@ -169,7 +169,11 @@ public class MetadataProcess {
         metadataService.addUserListenedSong(userId, songId, month, count);
     }
     private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner){
-        metadataService.updateMonthlyListenerForSongs();
+        System.out.println("Enter the song ID:");
+        int songId = scanner.nextInt();
+        System.out.println("Enter the date (yyyy-MM):");
+        String date = scanner.next();
+        metadataService.updateSongPlayCount(songId,date);
     }
 
 }

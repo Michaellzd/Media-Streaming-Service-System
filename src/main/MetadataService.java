@@ -82,26 +82,29 @@ public class MetadataService extends MediaStreamingService {
     }
     // count through listened records table, only sum up current month record.
 
-    public void updateMonthlyListenerForSongs() {
+    public void updateSongPlayCount(int songId,String date) {
         String sql = "UPDATE Songs\n" +
                 "SET play_count = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong\n" +
                 "  WHERE listenedSong.song_id = Songs.song_id\n" +
-                "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
-                "  GROUP BY song_id\n" +
+                "   AND listenedSong.song_id = ?\n" +
+                "   AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ?\n" +
                 "),0) ";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            statement.setString(2, date);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("Song Monthly Listener updated successfully.");
+                System.out.println("Song play count updated successfully.");
             } else {
                 System.out.println("Error: Unable to update.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     public void updateMonthlyListenerForArtists() {
         String sql = "UPDATE Artists a\n" +
