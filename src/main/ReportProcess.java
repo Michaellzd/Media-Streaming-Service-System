@@ -20,6 +20,8 @@ public class ReportProcess {
             System.out.println("7. Report total payments made out to record labels per given time period.");
             System.out.println("8. Report total payments made out to artists per given time period.");
             System.out.println("9. Report total payments made out to hosts per given time period.");
+            System.out.println("10. Total revenue of the streaming service per month.");
+            System.out.println("11. Total revenue of the streaming service per year.");
             System.out.println("0. Back to Main Menu");
 
             System.out.print("Enter your choice: ");
@@ -53,7 +55,12 @@ public class ReportProcess {
                 case 9:
                     getPeriodPaymentToHost(paymentService, scanner);
                     break;
-
+                case 10:
+                    getStreamingServiceMonthlyRevenue(paymentService, scanner);
+                    break;
+                case 11:
+                    getStreamingServiceYearlyRevenue(paymentService, scanner);
+                    break;
             }
         } while (choice != 0);
     }
@@ -200,7 +207,7 @@ public class ReportProcess {
                 String recordLabelName = resultSet.getString("record_label_name");
                 double totalPayment = resultSet.getDouble("total_payment");
 
-                System.out.printf("Record Label: %s%n Total Payment: %s%n",
+                System.out.printf("Record Label: %s%n Total Payment: %s%n%n",
                         recordLabelName, totalPayment);
             }
         } catch (SQLException e) {
@@ -228,7 +235,7 @@ public class ReportProcess {
                 String artistName = resultSet.getString("artist_name");
                 double totalPayment = resultSet.getDouble("total_payment");
 
-                System.out.printf("Artist Name: %s%n Total Payment: %s%n",
+                System.out.printf("Artist Name: %s%n Total Payment: %s%n%n",
                 artistName, totalPayment);
             }
         } catch (SQLException e) {
@@ -257,8 +264,54 @@ public class ReportProcess {
                 String last_name = resultSet.getString("last_name");
                 double totalPayment = resultSet.getDouble("total_payment");
 
-                System.out.printf("Host Name: %s %s%n Total Payment: %s%n",
+                System.out.printf("Host Name: %s %s%n Total Payment: %s%n%n",
                 first_name, last_name, totalPayment);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getStreamingServiceMonthlyRevenue(PaymentService paymentService, Scanner scanner) throws SQLException {
+
+        System.out.println("Report total revenue of the streaming service per month:");
+
+        ResultSet resultSet = paymentService.getStreamingServiceMonthlyRevenue();
+
+        try {
+            while (resultSet.next()) {
+                String hostPayment = resultSet.getString("host_payment");
+                String artistPayment = resultSet.getString("artist_payment");
+                String labelPayment = resultSet.getString("label_payment");
+                double income = resultSet.getDouble("income");
+                String yearMonth = resultSet.getString("year-month");
+                double revenue = resultSet.getDouble("revenue");
+
+                System.out.printf("Year-Month: %s%n Host Payment: %s%n Artist Payment: %s%n Label Payment: %s%n Income: %s%n Revenue: %s%n%n",
+                yearMonth, hostPayment, artistPayment, labelPayment, income, revenue);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getStreamingServiceYearlyRevenue(PaymentService paymentService, Scanner scanner) throws SQLException {
+
+        System.out.println("Report total revenue of the streaming service per year:");
+
+        ResultSet resultSet = paymentService.getStreamingServiceYearlyRevenue();
+
+        try {
+            while (resultSet.next()) {
+                String hostPayment = resultSet.getString("host_payment");
+                String artistPayment = resultSet.getString("artist_payment");
+                String labelPayment = resultSet.getString("label_payment");
+                double income = resultSet.getDouble("income");
+                String year = resultSet.getString("year");
+                double revenue = resultSet.getDouble("revenue");
+
+                System.out.printf("Year: %s%n Host Payment: %s%n Artist Payment: %s%n Label Payment: %s%n Income: %s%n Revenue: %s%n%n",
+                year, hostPayment, artistPayment, labelPayment, income, revenue);
             }
         } catch (SQLException e) {
             e.printStackTrace();
