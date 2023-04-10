@@ -1,5 +1,6 @@
 package main;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -64,11 +65,26 @@ public class MetadataProcess {
 
     }
     private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
+        metadataService.updateMonthlyListenerForArtists();
     }
     private static void enterPodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
 
     }
     private static void updatePodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
+        try {
+            metadataService.connection.setAutoCommit(false);
+            metadataService.updateTheAvgRatingOfPodcast();
+            metadataService.updateTotalCountOfSubscribers();
+            metadataService.connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                metadataService.connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
     private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
@@ -128,7 +144,7 @@ public class MetadataProcess {
         }
     }
     private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner){
-
+        metadataService.updateMonthlyListenerForSongs();
     }
 
 }
