@@ -1,12 +1,13 @@
 package main;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class MaintainPaymentsService extends MediaStreamingService {
     public MaintainPaymentsService(Connection connection) {
         super(connection);
     }
-
 
     public ResultSet monthlyPaymentForGivenSong(int songId) {
         String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m'), s.song_title \n" +
@@ -294,6 +295,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 } else {
                     sm.executeUpdate();
                     updateManagementAccount(streamingAccountId, totalPayment * 1.0, true);
+                    System.out.println("Paid Hosts Successfully");
                 }
             }
         } catch (SQLException e) {
@@ -313,5 +315,56 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
     }
 
+    public void receiveSubFee() {
+        // Implement the logic to delete a song from the database
+//        All subscription fee is paid to streaming account 2
+        String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
+        String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
+                "SELECT 10.0 as monthly_subscription_fee, " +
+                "NOW() as date, " +
+                "User.listener_id as paid_user_id, " +
+                "2 as paid_streaming_account_id " +
+                "FROM User, theMediaStreamingManagement " +
+                "WHERE User.status_of_subscription = 1";
 
+        PreparedStatement sm1 = null;
+        PreparedStatement sm2 = null;
+
+        try {
+            connection.setAutoCommit(false);
+            sm1 = connection.prepareStatement(sql1);
+            sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
+
+            int rowsAffected = sm2.executeUpdate();
+
+            if (rowsAffected > 0) {
+                sm2.executeUpdate();
+                ResultSet resultSet = sm1.executeQuery();
+                if (resultSet.next()) {
+                    updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);
+                    System.out.println("paidService added successfully.");
+                }
+                else{
+                    System.out.println("No active user.");
+                }
+            } else {
+                System.out.println("Failed to add paidService.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+            try {
+                connection.rollback();
+                System.out.println("Rollback successful");
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

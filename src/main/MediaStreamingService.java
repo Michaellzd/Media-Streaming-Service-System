@@ -17,7 +17,6 @@ public class MediaStreamingService {
         this.connection = connection;
     }
 
-    //SQL for adding song
     public void addSong(int songId, String songTitle, String duration, String genres, int playCount, String language, double royaltyRate, String releaseDate, String releaseCountry, Integer albumId) {
         String sql = "INSERT INTO Songs (song_id, song_title, duration, genres, play_count, language, royalty_rate, release_date, release_country, album) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -41,7 +40,6 @@ public class MediaStreamingService {
         }
     }
 
-    //SQL for assign artists to song
     public void assignArtistToSong(String isCollaborator, int songId, int artistId) {
         String sql = "INSERT INTO performed (is_collaborator, song_id, artist_id) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -54,7 +52,6 @@ public class MediaStreamingService {
         }
     }
 
-    //    //SQL for assign artists to song
     public void updateSong(int songId, String newSongTitle, String newDuration, String newGenres, Integer newPlayCount, String newLanguage, BigDecimal newRoyaltyRate, String newReleaseDate, String newReleaseCountry) {
         String sql = "UPDATE Songs SET song_title = COALESCE(?, song_title), duration = COALESCE(?, duration), genres = COALESCE(?, genres), play_count = COALESCE(?, play_count), language = COALESCE(?, language), royalty_rate = COALESCE(?, royalty_rate), release_date = COALESCE(?, release_date), release_country = COALESCE(?, release_country) WHERE song_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -368,32 +365,32 @@ public class MediaStreamingService {
         }
     }
 
-    public void paidService(int paid_user_id) {
-        // Implement the logic to delete a song from the database
-        String sql = "INSERT INTO paidService (monthly_subscription_fee,`date`,paid_user_id,paid_streaming_account_id) VALUES ( ?, ?, ?, ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setBigDecimal(1, BigDecimal.valueOf(10));
-            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
-
-            statement.setTimestamp(2, timestamp);
-
-            statement.setInt(3, paid_user_id);
-            statement.setInt(4, 2);
-
-
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("paidService added successfully.");
-            } else {
-                System.out.println("Failed to add paidService.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-
-    }
+//    public void paidService(int paid_user_id) {
+//        // Implement the logic to delete a song from the database
+//        String sql = "INSERT INTO paidService (monthly_subscription_fee,`date`,paid_user_id,paid_streaming_account_id) VALUES ( ?, ?, ?, ?)";
+//
+//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//            statement.setBigDecimal(1, BigDecimal.valueOf(10));
+//            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
+//
+//            statement.setTimestamp(2, timestamp);
+//
+//            statement.setInt(3, paid_user_id);
+//            statement.setInt(4, 2);
+//
+//
+//            int rowsAffected = statement.executeUpdate();
+//
+//            if (rowsAffected > 0) {
+//                System.out.println("paidService added successfully.");
+//            } else {
+//                System.out.println("Failed to add paidService.");
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("Error: " + e.getMessage());
+//        }
+//
+//    }
 
     public void addPodcastHost(int host_id, String first_name,String last_name,String phone,String email,String city){
 

@@ -15,6 +15,7 @@ public class PaymentProcess {
             System.out.println("1. Make Monthly Payment to Record Label for Given Song");
             System.out.println("2. Make Monthly Payment to Artist for Given Song");
             System.out.println("3. Make Monthly Payment to Podcast Hosts");
+            System.out.println("4. Receive Monthly Payment from Subscribers");
 
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
@@ -31,6 +32,9 @@ public class PaymentProcess {
                     break;
                 case 3:
                     payHostsGivenMonthMenu(maintainPaymentsService, scanner);
+                    break;
+                case 4:
+                    receiveSubFeeMenu(maintainPaymentsService);
                     break;
 
             }
@@ -92,6 +96,10 @@ public class PaymentProcess {
         Integer streamingAccountId = Integer.parseInt(streamingAccountIdStr);
 
         maintainPaymentsService.payHosts(streamingAccountId);
+    }
+
+    private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService) {
+        maintainPaymentsService.receiveSubFee();
     }
 
 }
