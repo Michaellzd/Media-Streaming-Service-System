@@ -158,15 +158,17 @@ public class MetadataService extends MediaStreamingService {
 
 
 
-    public void updateTotalCountOfSubscribers() {
-        String sql = "UPDATE Podcast p \n" +
-                " SET total_subscribers = IFNULL((\n" +
-                "\tSELECT COUNT(*)\n" +
-                "\tFROM subscribedPodcast s\n" +
-                "\tWHERE p.podcast_id = s.podcast_id \n" +
-                "\tGROUP BY p.podcast_id \n" +
-                "),0); ";
+    public void updateTotalCountOfSubscribers(int podcastId) {
+        String sql = "UPDATE Podcast p\n" +
+                "SET total_subscribers = IFNULL((\n" +
+                "  SELECT COUNT(*)\n" +
+                "  FROM subscribedPodcast s\n" +
+                "  WHERE p.podcast_id = s.podcast_id\n" +
+                "), 0)\n" +
+                "WHERE p.podcast_id = ?; ";
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, podcastId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Subscribers updated successfully.");
@@ -177,6 +179,8 @@ public class MetadataService extends MediaStreamingService {
             e.printStackTrace();
         }
     }
+
+
 
     public void updateRating(int podcastId) {
         String sql = "UPDATE Podcast\n" +

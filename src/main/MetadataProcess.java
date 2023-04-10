@@ -17,11 +17,13 @@ public class MetadataProcess {
             System.out.println("4. Update play count for podcast episodes");
             System.out.println("5. Update the count of monthly listeners for artists");
             System.out.println("6. Enter the total count of ratings for podcasts");
-            System.out.println("7. Update the total count of subscribers and ratings for podcasts");
+            System.out.println("7. Enter the total count of subscribers for podcasts");
             System.out.println("8. Find songs given artist");
             System.out.println("9. Find songs given album");
             System.out.println("10. Find podcast episodes given podcast");
-            System.out.println("11. update ratings for podcasts");
+            System.out.println("11. Update ratings for podcasts");
+            System.out.println("12. Update the total count of subscribers for podcasts");
+
 
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
@@ -48,9 +50,9 @@ public class MetadataProcess {
                 case 6:
                     enterPodcastRatings(metadataService, scanner);
                     break;
-                case 7:
+                /*case 7:
                     updatePodcastSubscribersAndRatings(metadataService, scanner);
-                    break;
+                    break;*/
                 case 8:
                     findSongsGivenArtist(metadataService, scanner);
                     break;
@@ -63,6 +65,9 @@ public class MetadataProcess {
 
                 case 11:
                     updateRating(metadataService, scanner);
+                    break;
+                case 12:
+                    updatePodcastSubscribers(metadataService, scanner);
                     break;
                 case 0:
                     // go back to main menu
@@ -101,20 +106,10 @@ public class MetadataProcess {
         metadataService.addPodcastRatings(podcastId, userId, rating);
 
     }
-    private static void updatePodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
-        try {
-            metadataService.connection.setAutoCommit(false);
-            metadataService.updateTotalCountOfSubscribers();
-            metadataService.connection.commit();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                metadataService.connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    private static void updatePodcastSubscribers(MetadataService metadataService, Scanner scanner){
+        System.out.print("Enter the podcast id: ");
+        int podcastId = scanner.nextInt();
+        metadataService.updateTotalCountOfSubscribers(podcastId);
 
     }
     private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
