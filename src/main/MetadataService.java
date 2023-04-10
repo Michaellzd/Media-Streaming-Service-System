@@ -16,6 +16,27 @@ public class MetadataService extends MediaStreamingService {
         super(connection);
     }
 
+    public void addUserListenedPodcast(int listenerId, int podcastEpisodeId, String yearMonth, int listenCount) {
+        String date = yearMonth + "-01"; // 将月份转换为日期格式
+        String sql = "INSERT INTO listenedPodcast (listener_id, podcast_episode_id, date) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            for (int i = 0; i < listenCount; i++) {
+                statement.setInt(1, listenerId);
+                statement.setInt(2, podcastEpisodeId);
+                statement.setString(3, localDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                statement.executeUpdate();
+            }
+            System.out.println(listenCount + " records inserted.");
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+
+
+
     public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
         String date = month + "-01"; // 将月份转换为日期格式
         String sql = "INSERT INTO listenedSong (listener_id, song_id, date) VALUES (?, ?, ?)";

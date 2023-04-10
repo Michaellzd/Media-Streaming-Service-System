@@ -44,7 +44,7 @@ public class DatabaseMenu {
                 PaymentService paymentService = new PaymentService(connection);
                 InformProcess informProcess=new InformProcess();
                 ReportProcess reportProcess=new ReportProcess();
-                PaymentProcess paymentProcess=new PaymentProcess();
+                PaymentProcess PaymentProcess=new PaymentProcess();
                 MaintainPaymentsService maintainPaymentsService=new MaintainPaymentsService(connection);
 
                 switch (choice) {

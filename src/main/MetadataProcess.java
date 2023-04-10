@@ -89,6 +89,16 @@ public class MetadataProcess {
     }
     private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
 
+        System.out.println("Enter listener ID:");
+        int listenerId = scanner.nextInt();
+        System.out.println("Enter podcast episode ID:");
+        int podcastEpisodeId = scanner.nextInt();
+        System.out.println("Enter year and month (YYYY-MM format):");
+        String yearMonth = scanner.next();
+        System.out.println("Enter listen count:");
+        int listenCount = scanner.nextInt();
+        metadataService.addUserListenedPodcast(listenerId, podcastEpisodeId, yearMonth, listenCount);
+
     }
     private static void updatePodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
 
