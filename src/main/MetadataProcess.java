@@ -21,6 +21,8 @@ public class MetadataProcess {
             System.out.println("8. Find songs given artist");
             System.out.println("9. Find songs given album");
             System.out.println("10. Find podcast episodes given podcast");
+            System.out.println("11. update ratings for podcasts");
+
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
@@ -58,6 +60,10 @@ public class MetadataProcess {
                 case 10:
                     findPodcastEpisodesGivenPodcast(metadataService, scanner);
                     break;
+
+                case 11:
+                    updateRating(metadataService, scanner);
+                    break;
                 case 0:
                     // go back to main menu
                     return;
@@ -66,6 +72,13 @@ public class MetadataProcess {
 
         }
         } while (choice != 0);
+    }
+
+    private static void updateRating(MetadataService metadataService, Scanner scanner){
+        System.out.print("Enter podcast id to update rating: ");
+        int podcastId = scanner.nextInt();
+        metadataService.updateRating(podcastId);
+
     }
 
     private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
@@ -91,7 +104,6 @@ public class MetadataProcess {
     private static void updatePodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
         try {
             metadataService.connection.setAutoCommit(false);
-            metadataService.updateTheAvgRatingOfPodcast();
             metadataService.updateTotalCountOfSubscribers();
             metadataService.connection.commit();
         } catch (SQLException e) {

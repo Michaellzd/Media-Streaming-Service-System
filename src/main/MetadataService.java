@@ -178,23 +178,27 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-    public void updateTheAvgRatingOfPodcast() {
-        String sql = "UPDATE Podcast p\n" +
-                " SET rating = IFNULL((\n" +
-                " \tSELECT AVG(rating)\n" +
-                " \tFROM ratedPodcast r\n" +
-                " \tWHERE r.podcast_id = p.podcast_id \n" +
-                " \tGROUP BY r.podcast_id \n" +
-                "),0); ";
+    public void updateRating(int podcastId) {
+        String sql = "UPDATE Podcast\n" +
+                "SET rating = IFNULL((\n" +
+                "  SELECT AVG(rating)\n" +
+                "  FROM ratedPodcast\n" +
+                "  WHERE podcast_id = ?\n" +
+                "), 0)\n" +
+                "WHERE podcast_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, podcastId);
+            statement.setInt(2, podcastId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("Rating updated successfully.");
+                System.out.println("Podcast rating updated successfully.");
             } else {
                 System.out.println("Error: Unable to update.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
         }
     }
+
+
 }
