@@ -106,17 +106,19 @@ public class MetadataService extends MediaStreamingService {
     }
 
 
-    public void updateMonthlyListenerForArtists() {
+    public void updateMonthlyListenerForArtists(int artistId, String month) {
         String sql = "UPDATE Artists a\n" +
                 "SET monthly_listener = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong l\n" +
                 "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" +
                 "  WHERE p.artist_id  = a.artist_id \n" +
-                "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  \tAND DATE_FORMAT(l.date,'%Y-%m') = ?\n" +
                 "  GROUP BY p.artist_id\n" +
-                "),0)";
+                "),0) WHERE a.artist_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, month);
+            statement.setInt(2, artistId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Artist Monthly Listener updated successfully.");
@@ -128,15 +130,45 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-    public void updateTotalCountOfSubscribers() {
-        String sql = "UPDATE Podcast p \n" +
-                " SET total_subscribers = IFNULL((\n" +
-                "\tSELECT COUNT(*)\n" +
-                "\tFROM subscribedPodcast s\n" +
-                "\tWHERE p.podcast_id = s.podcast_id \n" +
-                "\tGROUP BY p.podcast_id \n" +
-                "),0); ";
+
+    public void updatePodcastEpisodeListeningCount(int episodeId, String date) {
+        String sql = "UPDATE PodcastEpisodes\n" +
+                "SET listening_count = IFNULL((\n" +
+                "  SELECT COUNT(*)\n" +
+                "  FROM listenedPodcast\n" +
+                "  WHERE listenedPodcast.podcast_episode_id = PodcastEpisodes.podcast_episode_id\n" +
+                "    AND listenedPodcast.podcast_episode_id = ?\n" +
+                "    AND DATE_FORMAT(listenedPodcast.date, '%Y-%m') = ?\n" +
+                "), 0)\n" +
+                "WHERE podcast_episode_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, episodeId);
+            statement.setString(2, date);
+            statement.setInt(3, episodeId);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Podcast episode listening count updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+
+
+    public void updateTotalCountOfSubscribers(int podcastId) {
+        String sql = "UPDATE Podcast p\n" +
+                "SET total_subscribers = IFNULL((\n" +
+                "  SELECT COUNT(*)\n" +
+                "  FROM subscribedPodcast s\n" +
+                "  WHERE p.podcast_id = s.podcast_id\n" +
+                "), 0)\n" +
+                "WHERE p.podcast_id = ?; ";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, podcastId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Subscribers updated successfully.");
@@ -148,23 +180,29 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-    public void updateTheAvgRatingOfPodcast() {
-        String sql = "UPDATE Podcast p\n" +
-                " SET rating = IFNULL((\n" +
-                " \tSELECT AVG(rating)\n" +
-                " \tFROM ratedPodcast r\n" +
-                " \tWHERE r.podcast_id = p.podcast_id \n" +
-                " \tGROUP BY r.podcast_id \n" +
-                "),0); ";
+
+
+    public void updateRating(int podcastId) {
+        String sql = "UPDATE Podcast\n" +
+                "SET rating = IFNULL((\n" +
+                "  SELECT AVG(rating)\n" +
+                "  FROM ratedPodcast\n" +
+                "  WHERE podcast_id = ?\n" +
+                "), 0)\n" +
+                "WHERE podcast_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, podcastId);
+            statement.setInt(2, podcastId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("Rating updated successfully.");
+                System.out.println("Podcast rating updated successfully.");
             } else {
                 System.out.println("Error: Unable to update.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
         }
     }
+
+
 }
