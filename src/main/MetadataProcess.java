@@ -119,8 +119,13 @@ public class MetadataProcess {
 
     }
     private static void updatePodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
-
+        System.out.println("Enter the podcast episode ID:");
+        int episodeId = scanner.nextInt();
+        System.out.println("Enter the date (yyyy-MM):");
+        String date = scanner.next();
+        metadataService.updatePodcastEpisodeListeningCount(episodeId, date);
     }
+
     private static void findPodcastEpisodesGivenPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter the podcast name: ");
         scanner.nextLine();

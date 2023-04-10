@@ -131,6 +131,33 @@ public class MetadataService extends MediaStreamingService {
     }
 
 
+    public void updatePodcastEpisodeListeningCount(int episodeId, String date) {
+        String sql = "UPDATE PodcastEpisodes\n" +
+                "SET listening_count = IFNULL((\n" +
+                "  SELECT COUNT(*)\n" +
+                "  FROM listenedPodcast\n" +
+                "  WHERE listenedPodcast.podcast_episode_id = PodcastEpisodes.podcast_episode_id\n" +
+                "    AND listenedPodcast.podcast_episode_id = ?\n" +
+                "    AND DATE_FORMAT(listenedPodcast.date, '%Y-%m') = ?\n" +
+                "), 0)\n" +
+                "WHERE podcast_episode_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, episodeId);
+            statement.setString(2, date);
+            statement.setInt(3, episodeId);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Podcast episode listening count updated successfully.");
+            } else {
+                System.out.println("Error: Unable to update.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+
+
     public void updateTotalCountOfSubscribers() {
         String sql = "UPDATE Podcast p \n" +
                 " SET total_subscribers = IFNULL((\n" +
