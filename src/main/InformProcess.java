@@ -795,6 +795,9 @@ public class InformProcess {
 
         System.out.print("Enter subscriber status(0:inactive/1:active): ");
         int status = scanner.nextInt();
+        scanner.nextLine();
+
+        mediaStreamingService.addUser(userId,firstname,lastname,phone,email,status);
 //        scanner.nextLine();
 //        mediaStreamingService.addUser(userId,firstname,lastname,phone,email,status);
 //        if(status==1){
