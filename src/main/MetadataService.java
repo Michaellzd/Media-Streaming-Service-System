@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class MetadataService extends MediaStreamingService {
@@ -14,26 +16,23 @@ public class MetadataService extends MediaStreamingService {
         super(connection);
     }
 
-    public void addUserListenedSong(int userId, int songId){
-        String pattern = "yyyy-MM-dd HH:mm:ss:SSS";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String format = simpleDateFormat.format(new Date());
-        System.out.println("current time: "+format);
-        String sql = "INSERT INTO listenedSong VALUES(?,?,?)";
+    public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
+        String date = month + "-01"; // 将月份转换为日期格式
+        String sql = "INSERT INTO listenedSong (listener_id, song_id, date) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1,format);
-            statement.setInt(2, userId);
-            statement.setInt(3, songId);
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("User:"+userId+" listened song:"+songId+" on "+new Date());
-            } else {
-                System.out.println("Failed to update artist's record label.");
+            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            for (int i = 0; i < listenCount; i++) {
+                statement.setInt(1, listenerId);
+                statement.setInt(2, songId);
+                statement.setString(3, localDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                statement.executeUpdate();
             }
+            System.out.println(listenCount + " records inserted.");
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     public void updatePlayCountForSongs(int songId, int playCount) {
         updateSong(songId, null, null, null, playCount, null, null, null, null);
