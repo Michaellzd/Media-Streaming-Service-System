@@ -17,6 +17,7 @@ public class MediaStreamingService {
         this.connection = connection;
     }
 
+    //SQL for adding song
     public void addSong(int songId, String songTitle, String duration, String genres, int playCount, String language, double royaltyRate, String releaseDate, String releaseCountry, Integer albumId) {
         String sql = "INSERT INTO Songs (song_id, song_title, duration, genres, play_count, language, royalty_rate, release_date, release_country, album) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -40,6 +41,7 @@ public class MediaStreamingService {
         }
     }
 
+    //SQL for assign artists to song
     public void assignArtistToSong(String isCollaborator, int songId, int artistId) {
         String sql = "INSERT INTO performed (is_collaborator, song_id, artist_id) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -52,6 +54,7 @@ public class MediaStreamingService {
         }
     }
 
+    //    //SQL for assign artists to song
     public void updateSong(int songId, String newSongTitle, String newDuration, String newGenres, Integer newPlayCount, String newLanguage, BigDecimal newRoyaltyRate, String newReleaseDate, String newReleaseCountry) {
         String sql = "UPDATE Songs SET song_title = COALESCE(?, song_title), duration = COALESCE(?, duration), genres = COALESCE(?, genres), play_count = COALESCE(?, play_count), language = COALESCE(?, language), royalty_rate = COALESCE(?, royalty_rate), release_date = COALESCE(?, release_date), release_country = COALESCE(?, release_country) WHERE song_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

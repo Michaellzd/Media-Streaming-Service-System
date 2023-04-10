@@ -7,6 +7,8 @@ public class MetadataProcess {
     public static void metadataAndRecordsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
+            System.out.println("********************************");
+
             System.out.println("Metadata and Records Menu");
             System.out.println("1. Enter play count for songs");
             System.out.println("2. Update play count for songs");
@@ -22,6 +24,7 @@ public class MetadataProcess {
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
+            System.out.println("********************************");
 
             switch (choice) {
                 case 9:

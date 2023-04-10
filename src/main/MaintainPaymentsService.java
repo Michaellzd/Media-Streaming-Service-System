@@ -7,6 +7,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
         super(connection);
     }
 
+
     public ResultSet monthlyPaymentForGivenSong(int songId) {
         String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m'), s.song_title \n" +
                 "  FROM listenedSong l LEFT JOIN Songs s ON l.song_id =s.song_id \n" +

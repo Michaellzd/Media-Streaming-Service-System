@@ -9,6 +9,8 @@ public class PaymentProcess {
     public static void paymentProcessingMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) throws SQLException {
         int choice;
         do {
+            System.out.println("********************************");
+
             System.out.println("Payment Processing Menu");
             System.out.println("1. Make Monthly Payment to Record Label for Given Song");
             System.out.println("2. Make Monthly Payment to Artist for Given Song");
@@ -17,6 +19,8 @@ public class PaymentProcess {
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
+            System.out.println("********************************");
+
 
             switch (choice) {
                 case 1:

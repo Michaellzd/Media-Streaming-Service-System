@@ -7,9 +7,12 @@ import java.util.Scanner;
 
 public class InformProcess {
 
+
+    //Submenu for information Process
     public  void informationProcessingMenu(MediaStreamingService mediaStreamingService, Scanner scanner) throws SQLException {
         int choice;
         do {
+            System.out.println("********************************");
             System.out.println("Information Processing Menu");
             System.out.println("1. Manage Songs");
             System.out.println("2. Manage Artists");
@@ -37,7 +40,9 @@ public class InformProcess {
 
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
+
             choice = scanner.nextInt();
+            System.out.println("********************************");
 
             switch (choice) {
                 case 1:
@@ -99,6 +104,7 @@ public class InformProcess {
         } while (choice != 0);
     }
 
+    //Assign host to podcast
     private void assignHostsToPodcastsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         scanner.nextLine();
 
@@ -118,6 +124,7 @@ public class InformProcess {
         }
     }
 
+    //Assign artist to album
     private void assignArtistsToAlbumsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         scanner.nextLine();
         System.out.println("Enter artist name: ");
@@ -135,6 +142,7 @@ public class InformProcess {
         }
     }
 
+    //enter album
     private void addAlbum(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Album Id: ");
         int albumId = scanner.nextInt();
@@ -156,16 +164,21 @@ public class InformProcess {
         mediaStreamingService.addAlbum(albumId, albumName, trackNumber, releaseYear, edition);
     }
 
+    //submenu to manage podcats episodes
     private void managePodcastEpisodesMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
+            System.out.println("********************************");
+
             System.out.println("Manage Podcast Episodes Menu");
             System.out.println("1. Add Podcast Episode");
             System.out.println("2. Update Podcast Episode");
             System.out.println("3. Delete Podcast Episode");
             System.out.println("0. Back to Information Processing Menu");
             System.out.print("Enter your choice: ");
+
             choice = scanner.nextInt();
+            System.out.println("********************************");
 
             scanner.nextLine(); // Consume the newline character
 
@@ -262,7 +275,7 @@ public class InformProcess {
     }
 
 
-
+    //add podcast
     private void addPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Podcast Id: ");
         int podcastId = scanner.nextInt();
@@ -298,6 +311,7 @@ public class InformProcess {
         mediaStreamingService.addPodcast(podcastId, podcastName, totalSubscribers, country, episodeCount, genres, language, sponsors, rating);
     }
 
+    //assign artist to the record label
     private void assignArtistsToRecordLabels(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.println("Enter artist name: ");
         String artistName = scanner.next();
@@ -314,20 +328,23 @@ public class InformProcess {
         }
 
     }
-
+    //submenu for managment of artists
     private void manageArtistsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
 
         int choice;
         do {
+            System.out.println("********************************");
             System.out.println("Manage Artists Menu");
             System.out.println("1. Add Artist");
             System.out.println("2. Update Artist");
             System.out.println("3. Delete Artist");
             System.out.println("0. Back to Information Processing Menu");
             System.out.print("Enter your choice: ");
+
             choice = scanner.nextInt();
 
             scanner.nextLine(); // Consume the newline character
+            System.out.println("********************************");
 
             switch (choice) {
                 case 1:
@@ -406,7 +423,7 @@ public class InformProcess {
             }
         } while (choice != 0);
     }
-
+    //add record label
     private void addRecordLabel(MediaStreamingService mediaStreamingService,Scanner scanner) {
         System.out.print("Enter Record Label Id: ");
         int recordLabelId = scanner.nextInt();
@@ -418,6 +435,7 @@ public class InformProcess {
         mediaStreamingService.addRecordLabel(recordLabelId,recordLabelName);
     }
 
+    //Display all podcast episodes
     private void DisplayPodcastEpisode(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Podcast Episodes:");
         ResultSet resultSet = mediaStreamingService.listAllPodcastEpisodes();
@@ -441,6 +459,7 @@ public class InformProcess {
         }
     }
 
+    //display all podcast hosts
     private void DisplayPodcastHostMenu(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Podcast Hosts:");
         ResultSet resultSet = mediaStreamingService.listAllPodcastHosts();
@@ -489,6 +508,7 @@ public class InformProcess {
         }
     }
 
+    //display all artist
     private void DisplayArtist(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Artists:");
         ResultSet resultSet = mediaStreamingService.listAllArtists();
@@ -514,6 +534,8 @@ public class InformProcess {
         }
     }
 
+
+    //display all songs
     private void DisplaySongs(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Songs:");
         ResultSet resultSet = mediaStreamingService.listAllSongs();
@@ -543,10 +565,12 @@ public class InformProcess {
     }
 
 
-
+    //sub menu for mangement of songs
     private void manageSongsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
+            System.out.println("********************************");
+
             System.out.println("Manage Songs Menu");
             System.out.println("1. Add Song");
             System.out.println("2. Update Song");
@@ -555,6 +579,7 @@ public class InformProcess {
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
 
+            System.out.println("********************************");
 
             switch (choice) {
                 case 1:
@@ -692,9 +717,13 @@ public class InformProcess {
         } while (choice != 0);
     }
 
+
+    //submenu for the management of podcats hosts
     public void managePodcastHostsMenu(MediaStreamingService mediaStreamingService, Scanner scanner){
         int choice;
         do {
+            System.out.println("********************************");
+
             System.out.println("Manage PodcastHosts Menu");
             System.out.println("1. Add PodcastHosts");
             System.out.println("2. Update PodcastHosts");
@@ -702,6 +731,7 @@ public class InformProcess {
             System.out.println("0. Back to Information Processing Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
+            System.out.println("********************************");
 
             scanner.nextLine(); // Consume the newline character
 
@@ -777,6 +807,7 @@ public class InformProcess {
 
     }
 
+    // add user
     public void addUser(MediaStreamingService mediaStreamingService, Scanner scanner){
         System.out.print("Enter User Id: ");
         int userId = scanner.nextInt();
