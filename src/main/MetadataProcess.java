@@ -7,8 +7,6 @@ public class MetadataProcess {
     public static void metadataAndRecordsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
-            System.out.println("********************************");
-
             System.out.println("Metadata and Records Menu");
             System.out.println("1. Enter play count for songs");
             System.out.println("2. Update play count for songs");
@@ -24,21 +22,9 @@ public class MetadataProcess {
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
-            System.out.println("********************************");
-
+            MetadataService metadataService = new MetadataService(mediaStreamingService);
             switch (choice) {
-                case 9:
-                    findSongsGivenArtist(mediaStreamingService, scanner);
-                    break;
-
-                case 10:
-                    findSongsGivenAlbum(mediaStreamingService, scanner);
-                    break;
-
-                case 11:
-                    findPodcastEpisodesGivenPodcast(mediaStreamingService, scanner);
-                    break;
-                /*case 1:
+                case 1:
                     enterSongPlayCount(metadataService, scanner);
                     break;
                   case 2:
@@ -70,11 +56,27 @@ public class MetadataProcess {
                     break;
                 case 11:
                     findPodcastEpisodesGivenPodcast(metadataService, scanner);
-                    break;*/
+                    break;
             }
         } while (choice != 0);
     }
+    private static void enterArtistMonthlyListeners(MetadataService metadataService, Scanner scanner){
 
+    }
+    private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
+    }
+    private static void enterPodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
+
+    }
+    private static void updatePodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
+
+    }
+    private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
+
+    }
+    private static void updatePodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
+
+    }
     private static void findPodcastEpisodesGivenPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter the podcast name: ");
         scanner.nextLine();
@@ -112,6 +114,21 @@ public class MetadataProcess {
         for (String songTitle : songTitles) {
             System.out.println(songTitle);
         }
+    }
+
+    private static void enterSongPlayCount(MetadataService metadataService,Scanner scanner){
+        System.out.println("Enter the user ID:");
+        int userId = scanner.nextInt();
+        System.out.println("Enter the song ID:");
+        int songId = scanner.nextInt();
+        System.out.println("Enter the listened times:");
+        int count = scanner.nextInt();
+        for (int i = 0; i < count ; i++) {
+            metadataService.addUserListenedSong(userId,songId);
+        }
+    }
+    private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner){
+
     }
 
 }

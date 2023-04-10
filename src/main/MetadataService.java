@@ -3,11 +3,36 @@ package main;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MetadataService extends MediaStreamingService {
-
+    public MetadataService(MediaStreamingService mediaStreamingService){
+        super(mediaStreamingService.connection);
+    }
     public MetadataService(Connection connection) {
         super(connection);
+    }
+
+    public void addUserListenedSong(int userId, int songId){
+        String pattern = "yyyy-MM-dd HH:mm:ss:SSS";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String format = simpleDateFormat.format(new Date());
+        System.out.println("current time: "+format);
+        String sql = "INSERT INTO listenedSong VALUES(?,?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1,format);
+            statement.setInt(2, userId);
+            statement.setInt(3, songId);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("User:"+userId+" listened song:"+songId+" on "+new Date());
+            } else {
+                System.out.println("Failed to update artist's record label.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void updatePlayCountForSongs(int songId, int playCount) {
