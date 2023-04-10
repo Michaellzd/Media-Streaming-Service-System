@@ -72,7 +72,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "INNER JOIN Artists ON Artists.artist_id = performed.artist_id " +
                 "WHERE listenedSong.song_id = ? " +
                 "AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
-                "AND performed.is_collaborator = 0";
+                "AND performed.is_collaborator = 0 " +
+                "LIMIT 1";
 
 //        PreparedStatement sm1 = null;
         PreparedStatement sm2 = null;
@@ -85,10 +86,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
             rs.beforeFirst();
 
             while (rs.next()) {
-//                Float columnValue = rs.getFloat(1);
-//                System.out.print(columnValue + " " + rsmd.getColumnName(1) + ", ");
-//                String columnValue1 = rs.getString(2);
-//                System.out.print(columnValue1 + " " + rsmd.getColumnName(2));
 
                 if (rs.getString(2).equals(month)) {
                     totalPayment = rs.getFloat("payment");
@@ -99,7 +96,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 System.out.println("No available amount to pay");
             } else {
                 connection.setAutoCommit(false);
-//                sm1 = connection.prepareStatement(sql1);
                 sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
                 sm2.setFloat(2, totalPayment);
                 if (streamingAccountId != null) {
@@ -133,7 +129,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
 //                    System.out.println(totalPayment); // debug
                     System.out.println("Paid Successfully");
                     updateManagementAccount(streamingAccountId, totalPayment * 0.3, true);
-
                 }
             }
         } catch (SQLException e) {
@@ -261,7 +256,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
          */
 
         String sql = "INSERT INTO paidHost (paid_host_id, amount, date, paid_streaming_account_id) " +
-                "SELECT PodcastHosts.host_id as paid_host_id, " +
+                "SELECT DISTINCT PodcastHosts.host_id as paid_host_id, " +
                 "(500 + PodcastEpisodes.advertisement_count * 100) as amount, " +
                 "NOW() as date, " +
                 "? as paid_streaming_account_id " +
@@ -294,7 +289,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 if (rowsAffected == 0) {
                     System.out.println("Unable to Pay.");
                 } else {
-                    sm.executeUpdate();
                     updateManagementAccount(streamingAccountId, totalPayment * 1.0, true);
                     System.out.println("Paid Hosts Successfully");
                 }
@@ -321,7 +315,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
 //        All subscription fee is paid to streaming account 2
         String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
         String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
-                "SELECT 10.0 as monthly_subscription_fee, " +
+                "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
                 "NOW() as date, " +
                 "User.listener_id as paid_user_id, " +
                 "2 as paid_streaming_account_id " +
@@ -339,7 +333,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
             int rowsAffected = sm2.executeUpdate();
 
             if (rowsAffected > 0) {
-                sm2.executeUpdate();
+//                sm2.executeUpdate();
                 ResultSet resultSet = sm1.executeQuery();
                 if (resultSet.next()) {
                     updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);
