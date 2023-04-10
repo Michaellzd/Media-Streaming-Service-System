@@ -16,7 +16,7 @@ public class MetadataProcess {
             System.out.println("3. Enter play count for podcast episodes");
             System.out.println("4. Update play count for podcast episodes");
             System.out.println("5. Update the count of monthly listeners for artists");
-            System.out.println("6. Enter the total count of subscribers and ratings for podcasts");
+            System.out.println("6. Enter the total count of ratings for podcasts");
             System.out.println("7. Update the total count of subscribers and ratings for podcasts");
             System.out.println("8. Find songs given artist");
             System.out.println("9. Find songs given album");
@@ -44,7 +44,7 @@ public class MetadataProcess {
                     updateArtistMonthlyListeners(metadataService, scanner);
                     break;
                 case 6:
-                    enterPodcastSubscribersAndRatings(metadataService, scanner);
+                    enterPodcastRatings(metadataService, scanner);
                     break;
                 case 7:
                     updatePodcastSubscribersAndRatings(metadataService, scanner);
@@ -71,7 +71,17 @@ public class MetadataProcess {
     private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
         metadataService.updateMonthlyListenerForArtists();
     }
-    private static void enterPodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){
+    private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner){
+        System.out.print("Enter podcast ID: ");
+        int podcastId = scanner.nextInt();
+
+        System.out.print("Enter user ID: ");
+        int userId = scanner.nextInt();
+
+        System.out.print("Enter podcast rating (out of 5): ");
+        double rating = scanner.nextDouble();
+
+        metadataService.addPodcastRatings(podcastId, userId, rating);
 
     }
     private static void updatePodcastSubscribersAndRatings(MetadataService metadataService, Scanner scanner){

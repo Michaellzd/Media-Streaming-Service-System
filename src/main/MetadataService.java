@@ -35,6 +35,24 @@ public class MetadataService extends MediaStreamingService {
     }
 
 
+    public void addPodcastRatings(int podcastId, int userId, double rating) {
+        String sql = "INSERT INTO ratedPodcast (listener_id, podcast_id, rating) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            statement.setInt(2, podcastId);
+            statement.setDouble(3, rating);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Successfully added rating for podcast " + podcastId + " by user " + userId);
+            } else {
+                System.out.println("Failed to add rating for podcast " + podcastId + " by user " + userId);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+
 
 
     public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
