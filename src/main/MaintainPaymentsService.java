@@ -26,34 +26,35 @@ public class MaintainPaymentsService extends MediaStreamingService {
         return null;
     }
 
-    public void updateManagementAccount(int streamingAccountId, Double amount, Boolean isMinus) {
+    public void updateManagementAccount(int streamingAccountId, Double amount, Boolean isMinus) throws SQLException {
         String sql = "UPDATE theMediaStreamingManagement SET balance = IF(?, balance - ?, balance + ?) WHERE streaming_account_id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            if (amount != null) {
-                statement.setDouble(2, amount);
-                statement.setDouble(3, amount);
-            } else {
-                statement.setNull(2, Types.INTEGER);
-                statement.setNull(3, Types.INTEGER);
-            }
-
-            if (isMinus != null) {
-                statement.setBoolean(1, isMinus);
-            } else {
-                statement.setNull(1, Types.BOOLEAN);
-            }
-
-            statement.setInt(4, streamingAccountId);
-
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Management account balance updated successfully.");
-            } else {
-                System.out.println("Error: Unable to update management account balance.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
+        PreparedStatement statement = connection.prepareStatement(sql);
+        if (amount != null) {
+            statement.setDouble(2, amount);
+            statement.setDouble(3, amount);
+        } else {
+            statement.setNull(2, Types.INTEGER);
+            statement.setNull(3, Types.INTEGER);
         }
+
+        if (isMinus != null) {
+            statement.setBoolean(1, isMinus);
+        } else {
+            statement.setNull(1, Types.BOOLEAN);
+        }
+
+        statement.setInt(4, streamingAccountId);
+
+        int rowsAffected = statement.executeUpdate();
+        if (rowsAffected > 0) {
+            System.out.println("Management account balance updated successfully.");
+        } else {
+            System.out.println("Error: Unable to update management account balance.");
+            throw new SQLException();
+        }
+//        } catch (SQLException e) {
+//            System.out.println("Error: " + e.getMessage());
+//        }
     }
 
 
