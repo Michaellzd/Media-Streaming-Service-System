@@ -185,8 +185,8 @@ public class InformProcess {
 
                     System.out.println("Enter release_date: ");
                     String release_date = scanner.next();
-                    System.out.println("Enter listening_count: ");
-                    int listening_count = scanner.nextInt();
+
+                    int listening_count = 0;
                     System.out.println("Enter advertisement_count (Input 0 if there is no advertisement count ): ");
                     int advertisement_count = 0;
                     if (scanner.hasNextInt()) {
@@ -227,12 +227,9 @@ public class InformProcess {
                         newReleaseDate = null;
                     }
 
-                    System.out.print("Enter new listening_count (leave blank to keep current value): ");
-                    String newListeningCountInput = scanner.nextLine();
+
                     Integer newListeningCount = null;
-                    if (!newListeningCountInput.isEmpty()) {
-                        newListeningCount = Integer.parseInt(newListeningCountInput);
-                    }
+
 
                     System.out.print("Enter new advertisement_count (leave blank to keep current value): ");
                     String newAdvertisementCountInput = scanner.nextLine();
@@ -337,8 +334,8 @@ public class InformProcess {
                     String artist_name = scanner.next();
                     System.out.println("Enter status (active/retired): ");
                     String status = scanner.next();
-                    System.out.println("Enter monthly_listener: ");
-                    int monthly_listener = scanner.nextInt();
+
+                    int monthly_listener =0;
                     System.out.println("Enter type (composer/musician/Band): ");
                     String type = scanner.next();
                     System.out.println("Enter country: ");
@@ -370,12 +367,9 @@ public class InformProcess {
                         newStatus = null;
                     }
 
-                    System.out.print("Enter new monthly_listener (leave blank to keep current value): ");
-                    String newMonthlyListenerInput = scanner.nextLine();
+
                     Integer newMonthlyListener = null;
-                    if (!newMonthlyListenerInput.isEmpty()) {
-                        newMonthlyListener = Integer.parseInt(newMonthlyListenerInput);
-                    }
+
 
                     System.out.print("Enter new type (composer/musician/Band, leave blank to keep current type): ");
                     String newType = scanner.nextLine();
@@ -571,9 +565,7 @@ public class InformProcess {
                     System.out.print("Enter Genres: ");
                     String genres = scanner.nextLine();
 
-                    System.out.print("Enter Play Count: ");
-                    int playCount = scanner.nextInt();
-                    scanner.nextLine();
+                    int playCount = 0;
 
                     System.out.print("Enter Language: ");
                     String language = scanner.nextLine();
@@ -647,12 +639,9 @@ public class InformProcess {
                         newGenres = null;
                     }
 
-                    System.out.print("Enter new play_count (or press Enter to keep current play_count): ");
-                    String playCountInput = scanner.nextLine();
+
                     Integer newPlayCount = null;
-                    if (!playCountInput.isEmpty()) {
-                        newPlayCount = Integer.parseInt(playCountInput);
-                    }
+
 
                     System.out.print("Enter new language (or press Enter to keep current language): ");
                     String newLanguage = scanner.nextLine();
