@@ -69,7 +69,11 @@ public class MetadataProcess {
     }
 
     private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
-        metadataService.updateMonthlyListenerForArtists();
+        System.out.println("Enter the artist ID:");
+        int artistId = scanner.nextInt();
+        System.out.println("Enter the month (yyyy-MM):");
+        String month = scanner.next();
+        metadataService.updateMonthlyListenerForArtists(artistId, month);
     }
     private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner){
         System.out.print("Enter podcast ID: ");

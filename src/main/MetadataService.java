@@ -106,17 +106,19 @@ public class MetadataService extends MediaStreamingService {
     }
 
 
-    public void updateMonthlyListenerForArtists() {
+    public void updateMonthlyListenerForArtists(int artistId, String month) {
         String sql = "UPDATE Artists a\n" +
                 "SET monthly_listener = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong l\n" +
                 "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" +
                 "  WHERE p.artist_id  = a.artist_id \n" +
-                "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  \tAND DATE_FORMAT(l.date,'%Y-%m') = ?\n" +
                 "  GROUP BY p.artist_id\n" +
-                "),0)";
+                "),0) WHERE a.artist_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, month);
+            statement.setInt(2, artistId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Artist Monthly Listener updated successfully.");
@@ -127,6 +129,7 @@ public class MetadataService extends MediaStreamingService {
             e.printStackTrace();
         }
     }
+
 
     public void updateTotalCountOfSubscribers() {
         String sql = "UPDATE Podcast p \n" +
