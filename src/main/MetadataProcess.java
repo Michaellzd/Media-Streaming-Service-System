@@ -50,7 +50,7 @@ public class MetadataProcess {
                     enterPodcastRatings(metadataService, scanner);
                     break;
                 case 7:
-                    updatePodcastSubscribers(metadataService, scanner);
+                    enterPodcastSubscribers(metadataService, scanner);
                     break;
                 case 8:
                     updateRating(metadataService, scanner);
@@ -73,6 +73,9 @@ public class MetadataProcess {
             }
         } while (choice != 0);
 
+    }
+
+    private static void enterPodcastSubscribers(MetadataService metadataService, Scanner scanner) {
     }
 
     private static void updateRating(MetadataService metadataService, Scanner scanner){
