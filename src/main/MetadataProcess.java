@@ -9,7 +9,6 @@ public class MetadataProcess {
         int choice;
         do {
             System.out.println("********************************");
-
             System.out.println("Metadata and Records Menu");
             System.out.println("1. Enter play count for songs/artists");
             System.out.println("2. Update play count for songs");
@@ -18,17 +17,17 @@ public class MetadataProcess {
             System.out.println("5. Update the count of monthly listeners for artists");
             System.out.println("6. Enter the total count of ratings for podcasts");
             System.out.println("7. Enter the total count of subscribers for podcasts");
-            System.out.println("8. Find songs given artist");
-            System.out.println("9. Find songs given album");
-            System.out.println("10. Find podcast episodes given podcast");
-            System.out.println("11. Update ratings for podcasts");
-            System.out.println("12. Update the total count of subscribers for podcasts");
-
-
+            System.out.println("8. Update ratings for podcasts");
+            System.out.println("9. Update the total count of subscribers for podcasts");
+            System.out.println("10. Find songs given artist");
+            System.out.println("11. Find songs given album");
+            System.out.println("12. Find podcast episodes given podcast");
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
+
             MetadataService metadataService = new MetadataService(mediaStreamingService);
+
             System.out.println("********************************");
 
             switch (choice) {
@@ -50,33 +49,30 @@ public class MetadataProcess {
                 case 6:
                     enterPodcastRatings(metadataService, scanner);
                     break;
-                /*case 7:
-                    updatePodcastSubscribersAndRatings(metadataService, scanner);
-                    break;*/
+                case 7:
+                    updatePodcastSubscribers(metadataService, scanner);
+                    break;
                 case 8:
-                    findSongsGivenArtist(metadataService, scanner);
-                    break;
-                case 9:
-                    findSongsGivenAlbum(metadataService, scanner);
-                    break;
-                case 10:
-                    findPodcastEpisodesGivenPodcast(metadataService, scanner);
-                    break;
-
-                case 11:
                     updateRating(metadataService, scanner);
                     break;
-                case 12:
+                case 9:
                     updatePodcastSubscribers(metadataService, scanner);
+                    break;
+                case 10:
+                    findSongsGivenArtist(metadataService, scanner);
+                    break;
+                case 11:
+                    findSongsGivenAlbum(metadataService, scanner);
+                    break;
+                case 12:
+                    findPodcastEpisodesGivenPodcast(metadataService, scanner);
                     break;
                 case 0:
                     // go back to main menu
                     return;
-
-
-
-        }
+            }
         } while (choice != 0);
+
     }
 
     private static void updateRating(MetadataService metadataService, Scanner scanner){
