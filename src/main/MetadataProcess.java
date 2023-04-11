@@ -76,6 +76,11 @@ public class MetadataProcess {
     }
 
     private static void enterPodcastSubscribers(MetadataService metadataService, Scanner scanner) {
+        System.out.println("Enter User id");
+        int userId = scanner.nextInt();
+        System.out.println("Enter Podcast id");
+        int podcastId = scanner.nextInt();
+
     }
 
     private static void updateRating(MetadataService metadataService, Scanner scanner){
@@ -86,11 +91,11 @@ public class MetadataProcess {
     }
 
     private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
-        System.out.println("Enter the artist ID:");
-        int artistId = scanner.nextInt();
-        System.out.println("Enter the month (yyyy-MM):");
-        String month = scanner.next();
-        metadataService.updateMonthlyListenerForArtists(artistId, month);
+//        System.out.println("Enter the artist ID:");
+//        int artistId = scanner.nextInt();
+//        System.out.println("Enter the month (yyyy-MM):");
+//        String month = scanner.next();
+          metadataService.updateMonthlyListenerForArtists();
     }
     private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner){
         System.out.print("Enter podcast ID: ");
@@ -184,11 +189,12 @@ public class MetadataProcess {
         metadataService.addUserListenedSong(userId, songId, month, count);
     }
     private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner){
-        System.out.println("Enter the song ID:");
-        int songId = scanner.nextInt();
-        System.out.println("Enter the date (yyyy-MM):");
-        String date = scanner.next();
-        metadataService.updateSongPlayCount(songId,date);
+//        System.out.println("Enter the song ID:");
+//        int songId = scanner.nextInt();
+//        System.out.println("Enter the date (yyyy-MM):");
+//        String date = scanner.next();
+//        metadataService.updateSongPlayCount(songId,date);
+          metadataService.updateSongPlayCount();
     }
 
 }

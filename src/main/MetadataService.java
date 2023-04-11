@@ -33,8 +33,6 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
-
     public void addPodcastRatings(int podcastId, int userId, double rating) {
         String sql = "INSERT INTO ratedPodcast (listener_id, podcast_id, rating) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -51,10 +49,6 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
-
-
-
     public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
         String date = month + "-01"; // 将月份转换为日期格式
         String sql = "INSERT INTO listenedSong (listener_id, song_id, date) VALUES (?, ?, ?)";
@@ -82,18 +76,16 @@ public class MetadataService extends MediaStreamingService {
     }
     // count through listened records table, only sum up current month record.
 
-    public void updateSongPlayCount(int songId,String date) {
+    public void updateSongPlayCount() {
         String sql = "UPDATE Songs\n" +
                 "SET play_count = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong\n" +
                 "  WHERE listenedSong.song_id = Songs.song_id\n" +
-                "   AND listenedSong.song_id = ?\n" +
-                "   AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ?\n" +
-                "),0) ";
+                "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  GROUP BY song_id\n" +
+                "),0) \n";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, songId);
-            statement.setString(2, date);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Song play count updated successfully.");
@@ -104,21 +96,17 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
-
-    public void updateMonthlyListenerForArtists(int artistId, String month) {
+    public void updateMonthlyListenerForArtists() {
         String sql = "UPDATE Artists a\n" +
                 "SET monthly_listener = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong l\n" +
                 "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" +
                 "  WHERE p.artist_id  = a.artist_id \n" +
-                "  \tAND DATE_FORMAT(l.date,'%Y-%m') = ?\n" +
+                "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
                 "  GROUP BY p.artist_id\n" +
-                "),0) WHERE a.artist_id = ?";
+                "),0)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, month);
-            statement.setInt(2, artistId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Artist Monthly Listener updated successfully.");

@@ -57,10 +57,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
 //        }
     }
 
-
     public void payLabelForGivenSongGivenMonth(Integer songId, String month, Integer streamingAccountId) {
 //        Need Transaction Here !!!!!!!!!!!!!
-
 
         String sql2 = "INSERT INTO paidLabel (paid_streaming_account_id, paid_record_label_id, amount, date) " +
                 "SELECT ? as paid_streaming_account_id, " +
