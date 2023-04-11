@@ -80,14 +80,14 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "SELECT ? as paid_streaming_account_id, " +
                 "Artists.record_label as paid_record_label_id, " +
                 "? * 0.3 as amount, " +
-                "NOW() as date " +
+                "? as date " +
                 "FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id " +
                 "INNER JOIN performed ON performed.song_id = Songs.song_id " +
                 "INNER JOIN Artists ON Artists.artist_id = performed.artist_id " +
-                "WHERE listenedSong.song_id = ? " +
+                "WHERE listenedSong.song_id = ? AND performed.is_collaborator = 0 " +
                 "AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
                 "AND performed.is_collaborator = 0 " +
-                "LIMIT 1";
+                "LIMIT 1 ";
 
         PreparedStatement sm = null;
 
@@ -115,15 +115,17 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 }
 
                 if (songId != null) {
-                    sm.setInt(3, songId);
+                    sm.setInt(4, songId);
                 } else {
-                    sm.setNull(3, Types.INTEGER);
+                    sm.setNull(4, Types.INTEGER);
                 }
 
                 if (month != null) {
-                    sm.setString(4, month);
+                    sm.setString(3, month+"-01");
+                    sm.setString(5, month);
                 } else {
-                    sm.setNull(4, Types.INTEGER);
+                    sm.setNull(3, Types.DATE);
+                    sm.setNull(5, Types.DATE);
                 }
                 int rowsAffected = sm.executeUpdate();
                 if (rowsAffected == 0) {
@@ -162,14 +164,13 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "performed.artist_id as paid_artist_id, " +
                 "(? * 0.7 / " +
                 "(SELECT COUNT(DISTINCT artist_id) FROM performed WHERE song_id = listenedSong.song_id)) as amount, " +
-                "NOW() as date " +
+                "? as date " +
                 "FROM listenedSong " +
                 "INNER JOIN Songs ON listenedSong.song_id = Songs.song_id " +
                 "INNER JOIN performed ON performed.song_id = Songs.song_id " +
                 "WHERE listenedSong.song_id = ? AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
                 "GROUP BY performed.artist_id";
 
-//        PreparedStatement sm1 = null;
         PreparedStatement sm2 = null;
 
         try {
@@ -186,7 +187,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
             } else {
                 connection.setAutoCommit(false);
 
-//            sm1 = connection.prepareStatement(sql1);
                 sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
                 sm2.setFloat(2, totalPayment);
 
@@ -197,26 +197,24 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 }
 
                 if (songId != null) {
-                    sm2.setInt(3, songId);
-//                sm1.setInt(1, songId);
+                    sm2.setInt(4, songId);
                 } else {
-                    sm2.setNull(3, Types.INTEGER);
-//                sm1.setNull(1, Types.INTEGER);
+                    sm2.setNull(4, Types.INTEGER);
                 }
 
                 if (month != null) {
-                    sm2.setString(4, month);
+                    sm2.setString(3, month + "-01");
+                    sm2.setString(5, month);
 //                sm1.setString(2, month);
                 } else {
-                    sm2.setNull(4, Types.INTEGER);
-//                sm1.setNull(2, Types.INTEGER);
+                    sm2.setNull(3, Types.DATE);
+                    sm2.setNull(5, Types.DATE);
                 }
 
                 int rowsAffected = sm2.executeUpdate();
                 if (rowsAffected == 0) {
                     System.out.println("Unable to Pay.");
                 } else {
-//                ResultSet resultSet = sm1.executeQuery();
                     updateManagementAccount(streamingAccountId, totalPayment * 0.7, true);
                     connection.commit();
                     System.out.println("Paid Successfully");
@@ -289,6 +287,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 } else {
                     sm.setNull(1, Types.INTEGER);
                 }
+
+
                 int rowsAffected = sm.executeUpdate();
                 if (rowsAffected == 0) {
                     System.out.println("Unable to Pay.");
@@ -315,13 +315,13 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
     }
 
-    public void receiveSubFee() {
+    public void receiveSubFee(String month) {
         // Implement the logic to delete a song from the database
 //        All subscription fee is paid to streaming account 2
         String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
         String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
                 "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
-                "NOW() as date, " +
+                "? as date, " +
                 "User.listener_id as paid_user_id, " +
                 "2 as paid_streaming_account_id " +
                 "FROM User, theMediaStreamingManagement " +
@@ -334,11 +334,14 @@ public class MaintainPaymentsService extends MediaStreamingService {
             connection.setAutoCommit(false);
             sm1 = connection.prepareStatement(sql1);
             sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
-
+            if (month != null) {
+                sm2.setString(1, month + "-01");
+            } else {
+                sm2.setNull(1, Types.DATE);
+            }
             int rowsAffected = sm2.executeUpdate();
 
             if (rowsAffected > 0) {
-//                sm2.executeUpdate();
                 ResultSet resultSet = sm1.executeQuery();
                 if (resultSet.next()) {
                     updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);

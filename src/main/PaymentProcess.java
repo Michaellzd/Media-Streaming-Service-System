@@ -34,7 +34,7 @@ public class PaymentProcess {
                     payHostsGivenMonthMenu(maintainPaymentsService, scanner);
                     break;
                 case 4:
-                    receiveSubFeeMenu(maintainPaymentsService);
+                    receiveSubFeeMenu(maintainPaymentsService, scanner);
                     break;
 
             }
@@ -98,8 +98,11 @@ public class PaymentProcess {
         maintainPaymentsService.payHosts(streamingAccountId);
     }
 
-    private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService) {
-        maintainPaymentsService.receiveSubFee();
+    private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
+        scanner.nextLine();
+        System.out.println("Enter Month");
+        String month = scanner.nextLine();
+        maintainPaymentsService.receiveSubFee(month);
     }
 
 }
