@@ -16,7 +16,7 @@ public class MetadataProcess {
             System.out.println("4. Update play count for podcast episodes");
             System.out.println("5. Update the count of monthly listeners for artists");
             System.out.println("6. Enter the total count of ratings for podcasts");
-            System.out.println("7. Enter the total count of subscribers for podcasts");
+            System.out.println("7. Enter the a subscriber for podcast");
             System.out.println("8. Update ratings for podcasts");
             System.out.println("9. Update the total count of subscribers for podcasts");
             System.out.println("10. Find songs given artist");
@@ -80,7 +80,9 @@ public class MetadataProcess {
         int userId = scanner.nextInt();
         System.out.println("Enter Podcast id");
         int podcastId = scanner.nextInt();
-
+        System.out.println("Enter date YYYY-mm");
+        String date = scanner.next();
+        metadataService.userSubscribedPodcast(userId,podcastId,date);
     }
 
     private static void updateRating(MetadataService metadataService, Scanner scanner){

@@ -3,17 +3,30 @@ package main;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class MetadataService extends MediaStreamingService {
-    public MetadataService(MediaStreamingService mediaStreamingService){
+    public MetadataService(MediaStreamingService mediaStreamingService) {
         super(mediaStreamingService.connection);
     }
+
     public MetadataService(Connection connection) {
         super(connection);
+    }
+
+    public void userSubscribedPodcast(int userId, int podcastId, String yearMonth) {
+        String date = yearMonth + "-01"; // 将月份转换为日期格式
+        String sql = "INSERT INTO subscribedPodcast (date, podcast_id, listener_id) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            statement.setInt(2, podcastId);
+            statement.setInt(3, userId);
+            statement.setString(1, localDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void addUserListenedPodcast(int listenerId, int podcastEpisodeId, String yearMonth, int listenCount) {
@@ -33,6 +46,7 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
     public void addPodcastRatings(int podcastId, int userId, double rating) {
         String sql = "INSERT INTO ratedPodcast (listener_id, podcast_id, rating) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -49,6 +63,7 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
     public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
         String date = month + "-01"; // 将月份转换为日期格式
         String sql = "INSERT INTO listenedSong (listener_id, song_id, date) VALUES (?, ?, ?)";
@@ -96,6 +111,7 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
     public void updateMonthlyListenerForArtists() {
         String sql = "UPDATE Artists a\n" +
                 "SET monthly_listener = IFNULL((\n" +
@@ -145,7 +161,6 @@ public class MetadataService extends MediaStreamingService {
     }
 
 
-
     public void updateTotalCountOfSubscribers(int podcastId) {
         String sql = "UPDATE Podcast p\n" +
                 "SET total_subscribers = IFNULL((\n" +
@@ -167,7 +182,6 @@ public class MetadataService extends MediaStreamingService {
             e.printStackTrace();
         }
     }
-
 
 
     public void updateRating(int podcastId) {
