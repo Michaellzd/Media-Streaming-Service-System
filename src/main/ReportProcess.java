@@ -284,7 +284,7 @@ public class ReportProcess {
                 String artistPayment = resultSet.getString("artist_payment");
                 String labelPayment = resultSet.getString("label_payment");
                 double income = resultSet.getDouble("income");
-                String yearMonth = resultSet.getString("year-month");
+                String yearMonth = resultSet.getString("yearmonth");
                 double revenue = resultSet.getDouble("revenue");
 
                 System.out.printf("Year-Month: %s%n Host Payment: %s%n Artist Payment: %s%n Label Payment: %s%n Income: %s%n Revenue: %s%n%n",
