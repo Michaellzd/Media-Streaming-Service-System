@@ -61,38 +61,51 @@ public class PaymentService {
         return resultSet;
     }
 
-    // TODO: wrong search result
     public ResultSet getStreamingServiceMonthlyRevenue() {
-        String sql = "SELECT "
-                + "   IFNULL(host_payment, '0.00' ) host_payment,"
-                + "   IFNULL(artist_payment, '0.00' ) artist_payment, "
-                + "   IFNULL(label_payment, '0.00' ) label_payment,"
-                + "   income, "
-                + "   IFNULL(yearmonth1, yearmonth ) as `year-month`, "
-                + "   ROUND((income-IFNULL(host_payment, '0.00' ) -IFNULL(artist_payment, '0.00' )-IFNULL(label_payment,'0.00')),2) AS revenue "
-                + "FROM "
-                + "("
-                + "    SELECT * FROM ("
-                + "        SELECT SUM(ph.amount) host_payment, A.artist_payment,E.label_payment, DATE_FORMAT(ph.date, '%Y-%m') yearmonth1 FROM paidHost ph "
-                + "        LEFT OUTER JOIN "
-                + "            ("
-                + "                SELECT SUM(pa.amount) artist_payment,DATE_FORMAT(pa.date, '%Y-%m') AS yearmonth2 "
-                + "                FROM paidArtist pa  "
-                + "                GROUP BY yearmonth2"
-                + "            ) AS A "
-                + "        ON DATE_FORMAT(ph.date, '%Y-%m') = A.yearmonth2"
-                + "        LEFT OUTER JOIN "
-                + "            ("
-                + "                SELECT SUM(pl.amount) label_payment,DATE_FORMAT(pl.date, '%Y-%m') as yearmonth3 "
-                + "                FROM paidLabel pl "
-                + "                GROUP BY yearmonth3"
-                + "            ) AS E"
-                + "        ON DATE_FORMAT(ph.date, '%Y-%m') = E.yearmonth3"
-                + "        GROUP BY yearmonth1"
-                + "    ) AS B RIGHT OUTER JOIN "
-                + "    (SELECT SUM(ps.monthly_subscription_fee) income, DATE_FORMAT(ps.date, '%Y-%m') as yearmonth FROM paidService ps GROUP BY yearmonth"
-                + "    ) AS C ON B.yearmonth1 = C.yearmonth"
-                + ") AS D";
+        String sql = "SELECT yearmonths.yearmonth as yearmonth, " +
+                "COALESCE(SUM(paidLabel.total_payment), '0.00') as label_payment, " +
+                "COALESCE(SUM(paidArtist.total_payment), '0.00') as artist_payment, " +
+                "COALESCE(SUM(paidHost.total_payment), '0.00') as host_payment, " +
+                "COALESCE(SUM(paidService.total_payment), '0.00') as income, " +
+                "ROUND(COALESCE(SUM(paidService.total_payment), '0.00') - COALESCE(SUM(paidHost.total_payment), '0.00') - COALESCE(SUM(paidArtist.total_payment), '0.00') - COALESCE(SUM(paidLabel.total_payment), '0.00'),2) AS revenue "
+                +
+                "FROM ( " +
+                " SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS yearmonth " +
+                " FROM ( " +
+                " SELECT date FROM paidLabel " +
+                " UNION " +
+                " SELECT date FROM paidArtist " +
+                " UNION " +
+                " SELECT date FROM paidHost " +
+                " UNION " +
+                " SELECT date FROM paidService " +
+                " ) AS all_dates " +
+                ") AS yearmonths " +
+                "LEFT JOIN ( " +
+                " SELECT DATE_FORMAT(date, '%Y-%m') AS yearmonth, SUM(amount) as total_payment " +
+                " FROM paidLabel " +
+                " GROUP BY DATE_FORMAT(date, '%Y-%m') " +
+                ") AS paidLabel " +
+                "ON yearmonths.yearmonth = paidLabel.yearmonth " +
+                "LEFT JOIN ( " +
+                " SELECT DATE_FORMAT(date, '%Y-%m') AS yearmonth, SUM(amount) as total_payment " +
+                " FROM paidArtist " +
+                " GROUP BY DATE_FORMAT(date, '%Y-%m') " +
+                ") AS paidArtist " +
+                "ON yearmonths.yearmonth = paidArtist.yearmonth " +
+                "LEFT JOIN ( " +
+                " SELECT DATE_FORMAT(date, '%Y-%m') AS yearmonth, SUM(amount) as total_payment " +
+                " FROM paidHost " +
+                " GROUP BY DATE_FORMAT(date, '%Y-%m') " +
+                ") AS paidHost " +
+                "ON yearmonths.yearmonth = paidHost.yearmonth " +
+                "LEFT JOIN ( " +
+                " SELECT DATE_FORMAT(date, '%Y-%m') AS yearmonth, SUM(monthly_subscription_fee) as total_payment " +
+                " FROM paidService " +
+                " GROUP BY DATE_FORMAT(date, '%Y-%m') " +
+                ") AS paidService " +
+                "ON yearmonths.yearmonth = paidService.yearmonth " +
+                "GROUP BY yearmonths.yearmonth";
 
         ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -103,7 +116,6 @@ public class PaymentService {
         return resultSet;
     }
 
-    // TODO: to be optimized
     public ResultSet getStreamingServiceYearlyRevenue() {
         String sql = "SELECT "
                 + "  IFNULL(host_payment, '0.00') host_payment, "
