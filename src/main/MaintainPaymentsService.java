@@ -1,6 +1,8 @@
 package main;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDateTime;
 
 public class MaintainPaymentsService extends MediaStreamingService {
     public MaintainPaymentsService(Connection connection) {
@@ -55,29 +57,42 @@ public class MaintainPaymentsService extends MediaStreamingService {
 //        }
     }
 
-    public void payLabelForGivenSongGivenMonth(Integer songId, String month, Integer streamingAccountId) {
-//        Need Transaction Here !!!!!!!!!!!!!
 
-        String sql2 = "INSERT INTO paidLabel (paid_streaming_account_id, paid_record_label_id, amount, date) " +
+    public void payLabelForGivenSongGivenMonth(Integer songId, String month, Integer streamingAccountId) {
+        /**
+         * Description: Generate monthly payment to record labels.
+         */
+
+        /**
+         * Payment process includes 2 steps: 1. insert payment information into paidLabel table;
+         *                                   2. update management account balance.
+         * The two steps should be either both successfully executed or both not, so we use transaction here.
+         * Transaction Logic: 1. Set auto_commit to false;
+         *                    2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
+         *                    3. If step 2 throws out exception, rollback;
+         *                       ( Notice that we encapsulated step 2 into function updateManagementAccount,
+         *                       which would throw out exceptions if step 2 failed. )
+         *                    4. Otherwise, step 1 and step 2 were both executed successfully, commit;
+         *                   `5. Set auto_commit back to true.
+         */
+
+        String sql = "INSERT INTO paidLabel (paid_streaming_account_id, paid_record_label_id, amount, date) " +
                 "SELECT ? as paid_streaming_account_id, " +
                 "Artists.record_label as paid_record_label_id, " +
                 "? * 0.3 as amount, " +
-                "NOW() as date " +
+                "? as date " +
                 "FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id " +
                 "INNER JOIN performed ON performed.song_id = Songs.song_id " +
                 "INNER JOIN Artists ON Artists.artist_id = performed.artist_id " +
-                "WHERE listenedSong.song_id = ? " +
+                "WHERE listenedSong.song_id = ? AND performed.is_collaborator = 0 " +
                 "AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
                 "AND performed.is_collaborator = 0 " +
-                "LIMIT 1";
+                "LIMIT 1 ";
 
-//        PreparedStatement sm1 = null;
-        PreparedStatement sm2 = null;
+        PreparedStatement sm = null;
 
         try {
             ResultSet rs = monthlyPaymentForGivenSong(songId);
-//            ResultSetMetaData rsmd = rs.getMetaData(); // debug
-//            int columnsNumber = rsmd.getColumnCount(); // debug
             Float totalPayment = null;
             rs.beforeFirst();
 
@@ -87,44 +102,40 @@ public class MaintainPaymentsService extends MediaStreamingService {
                     totalPayment = rs.getFloat("payment");
                 }
             }
-//            System.out.println(totalPayment); //debug
             if (totalPayment == null) {
                 System.out.println("No available amount to pay");
             } else {
                 connection.setAutoCommit(false);
-                sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
-                sm2.setFloat(2, totalPayment);
+                sm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                sm.setFloat(2, totalPayment);
                 if (streamingAccountId != null) {
-                    sm2.setInt(1, streamingAccountId);
+                    sm.setInt(1, streamingAccountId);
                 } else {
-                    sm2.setNull(1, Types.INTEGER);
+                    sm.setNull(1, Types.INTEGER);
                 }
 
                 if (songId != null) {
-                    sm2.setInt(3, songId);
-//                    sm1.setInt(1, songId);
+                    sm.setInt(4, songId);
                 } else {
-                    sm2.setNull(3, Types.INTEGER);
-//                    sm1.setNull(1, Types.INTEGER);
+                    sm.setNull(4, Types.INTEGER);
                 }
 
                 if (month != null) {
-                    sm2.setString(4, month);
-//                    sm1.setString(2, month);
+                    sm.setString(3, month+"-01");
+                    sm.setString(5, month);
                 } else {
-                    sm2.setNull(4, Types.INTEGER);
-//                    sm1.setNull(2, Types.INTEGER);
+                    sm.setNull(3, Types.DATE);
+                    sm.setNull(5, Types.DATE);
                 }
-
-                int rowsAffected = sm2.executeUpdate();
+                int rowsAffected = sm.executeUpdate();
                 if (rowsAffected == 0) {
                     System.out.println("Unable to pay");
+                    // Notice that in this situation, no single row was infected in the whole database,
+                    // So there is no need to rollback or commit.
                 } else {
-//                    ResultSet resultSet = sm1.executeQuery();
-//                    sm2.executeUpdate();
-//                    System.out.println(totalPayment); // debug
                     System.out.println("Paid Successfully");
                     updateManagementAccount(streamingAccountId, totalPayment * 0.3, true);
+                    connection.commit();
                 }
             }
         } catch (SQLException e) {
@@ -153,14 +164,13 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "performed.artist_id as paid_artist_id, " +
                 "(? * 0.7 / " +
                 "(SELECT COUNT(DISTINCT artist_id) FROM performed WHERE song_id = listenedSong.song_id)) as amount, " +
-                "NOW() as date " +
+                "? as date " +
                 "FROM listenedSong " +
                 "INNER JOIN Songs ON listenedSong.song_id = Songs.song_id " +
                 "INNER JOIN performed ON performed.song_id = Songs.song_id " +
                 "WHERE listenedSong.song_id = ? AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
                 "GROUP BY performed.artist_id";
 
-//        PreparedStatement sm1 = null;
         PreparedStatement sm2 = null;
 
         try {
@@ -177,7 +187,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
             } else {
                 connection.setAutoCommit(false);
 
-//            sm1 = connection.prepareStatement(sql1);
                 sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
                 sm2.setFloat(2, totalPayment);
 
@@ -188,28 +197,26 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 }
 
                 if (songId != null) {
-                    sm2.setInt(3, songId);
-//                sm1.setInt(1, songId);
+                    sm2.setInt(4, songId);
                 } else {
-                    sm2.setNull(3, Types.INTEGER);
-//                sm1.setNull(1, Types.INTEGER);
+                    sm2.setNull(4, Types.INTEGER);
                 }
 
                 if (month != null) {
-                    sm2.setString(4, month);
+                    sm2.setString(3, month + "-01");
+                    sm2.setString(5, month);
 //                sm1.setString(2, month);
                 } else {
-                    sm2.setNull(4, Types.INTEGER);
-//                sm1.setNull(2, Types.INTEGER);
+                    sm2.setNull(3, Types.DATE);
+                    sm2.setNull(5, Types.DATE);
                 }
 
                 int rowsAffected = sm2.executeUpdate();
-                connection.commit();
                 if (rowsAffected == 0) {
                     System.out.println("Unable to Pay.");
                 } else {
-//                ResultSet resultSet = sm1.executeQuery();
                     updateManagementAccount(streamingAccountId, totalPayment * 0.7, true);
+                    connection.commit();
                     System.out.println("Paid Successfully");
                 }
             }
@@ -280,13 +287,15 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 } else {
                     sm.setNull(1, Types.INTEGER);
                 }
+
+
                 int rowsAffected = sm.executeUpdate();
-                connection.commit();
                 if (rowsAffected == 0) {
                     System.out.println("Unable to Pay.");
                 } else {
                     updateManagementAccount(streamingAccountId, totalPayment * 1.0, true);
                     System.out.println("Paid Hosts Successfully");
+                    connection.commit();
                 }
             }
         } catch (SQLException e) {
@@ -306,13 +315,13 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
     }
 
-    public void receiveSubFee() {
+    public void receiveSubFee(String month) {
         // Implement the logic to delete a song from the database
 //        All subscription fee is paid to streaming account 2
         String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
-        String sql2 = "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
+        String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
                 "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
-                "NOW() as date, " +
+                "? as date, " +
                 "User.listener_id as paid_user_id, " +
                 "2 as paid_streaming_account_id " +
                 "FROM User, theMediaStreamingManagement " +
@@ -325,16 +334,21 @@ public class MaintainPaymentsService extends MediaStreamingService {
             connection.setAutoCommit(false);
             sm1 = connection.prepareStatement(sql1);
             sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
-
+            if (month != null) {
+                sm2.setString(1, month + "-01");
+            } else {
+                sm2.setNull(1, Types.DATE);
+            }
             int rowsAffected = sm2.executeUpdate();
 
             if (rowsAffected > 0) {
-//                sm2.executeUpdate();
                 ResultSet resultSet = sm1.executeQuery();
                 if (resultSet.next()) {
                     updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);
                     System.out.println("paidService added successfully.");
-                } else {
+                    connection.commit();
+                }
+                else{
                     System.out.println("No active user.");
                 }
             } else {
