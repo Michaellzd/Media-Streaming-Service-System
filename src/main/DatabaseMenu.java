@@ -9,21 +9,31 @@ import java.util.Scanner;
 
 
 public class DatabaseMenu {
-    private static final String DB_URL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/zlu28";
-    private static final String DB_USER = "zlu28";
-    private static final String DB_PASSWORD = "200476848";
-
-
+    private static final String DB_URL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/pwang25";
+    private static final String DB_USER = "pwang25";
+    private static final String DB_PASSWORD = "200421429";
     //setting your own pwd
-
-
     // This is the main menu.
     public static void main(String[] args) {
-
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             Scanner scanner = new Scanner(System.in);
-
             int choice;
+            MediaStreamingService mediaStreamingService = new MediaStreamingService(connection);
+            MaintainPaymentsService maintainPaymentsService= new MaintainPaymentsService(connection);
+            PaymentService paymentService = new PaymentService(connection);
+            InformProcess informProcess=new InformProcess();
+            ReportProcess reportProcess=new ReportProcess();
+            PaymentProcess PaymentProcess=new PaymentProcess();
+            System.out.println("All artists");
+            ResultSetPrinter.printResultSet(mediaStreamingService.listAllArtists());
+            System.out.println("All songs");
+            ResultSetPrinter.printResultSet(mediaStreamingService.listAllSongs());
+            System.out.println("All Album");
+            ResultSetPrinter.printResultSet(mediaStreamingService.listAllAlbum());
+            System.out.println("All Podcast");
+            ResultSetPrinter.printResultSet(mediaStreamingService.listAllPodcast());
+
+
 
             do {
                 //The tasks to do
@@ -39,13 +49,6 @@ public class DatabaseMenu {
 
                 choice = scanner.nextInt();
                 System.out.println("********************************");
-
-                MediaStreamingService mediaStreamingService = new MediaStreamingService(connection);
-                PaymentService paymentService = new PaymentService(connection);
-                InformProcess informProcess=new InformProcess();
-                ReportProcess reportProcess=new ReportProcess();
-                PaymentProcess PaymentProcess=new PaymentProcess();
-                MaintainPaymentsService maintainPaymentsService=new MaintainPaymentsService(connection);
 
                 switch (choice) {
                     case 1:

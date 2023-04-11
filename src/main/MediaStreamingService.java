@@ -442,6 +442,12 @@ public class MediaStreamingService {
         return pstmt.executeQuery();
     }
 
+    public ResultSet listAllAlbum() throws SQLException{
+        String sql = "SELECT * FROM Album";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        return pstmt.executeQuery();
+    }
+
     public ResultSet listAllPodcastHosts() throws SQLException {
         String sql = "SELECT * FROM PodcastHosts";
         PreparedStatement pstmt = connection.prepareStatement(sql);

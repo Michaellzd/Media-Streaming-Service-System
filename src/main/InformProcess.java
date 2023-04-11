@@ -417,19 +417,20 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllPodcastEpisodes();
 
         try {
-            while (resultSet.next()) {
-                int podcast_episode_id = resultSet.getInt("podcast_episode_id");
-                String episode_title = resultSet.getString("episode_title");
-                String duration = resultSet.getString("duration");
-                String release_date = resultSet.getString("release_date");
-                int listening_count = resultSet.getInt("listening_count");
-                int advertisement_count = resultSet.getInt("advertisement_count");
-                int podcast = resultSet.getInt("podcast");
-
-                System.out.printf("Episode ID: %d%n Episode Title: %s%n Duration: %s%n Release Date: %s%n" +
-                                "Listening Count: %d%n Advertisement Count: %d%n Podcast: %d%n",
-                        podcast_episode_id, episode_title, duration, release_date, listening_count, advertisement_count, podcast);
-            }
+            ResultSetPrinter.printResultSet(resultSet);
+//            while (resultSet.next()) {
+//                int podcast_episode_id = resultSet.getInt("podcast_episode_id");
+//                String episode_title = resultSet.getString("episode_title");
+//                String duration = resultSet.getString("duration");
+//                String release_date = resultSet.getString("release_date");
+//                int listening_count = resultSet.getInt("listening_count");
+//                int advertisement_count = resultSet.getInt("advertisement_count");
+//                int podcast = resultSet.getInt("podcast");
+//
+//                System.out.printf("Episode ID: %d%n Episode Title: %s%n Duration: %s%n Release Date: %s%n" +
+//                                "Listening Count: %d%n Advertisement Count: %d%n Podcast: %d%n",
+//                        podcast_episode_id, episode_title, duration, release_date, listening_count, advertisement_count, podcast);
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -440,18 +441,19 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllPodcastHosts();
 
         try {
-            while (resultSet.next()) {
-                int host_id = resultSet.getInt("host_id");
-                String first_name = resultSet.getString("first_name");
-                String last_name = resultSet.getString("last_name");
-                String phone = resultSet.getString("phone");
-                String email = resultSet.getString("email");
-                String city = resultSet.getString("city");
-
-                System.out.printf("Host ID: %d%n First Name: %s%n Last Name: %s%n Phone: %s%n" +
-                                "Email: %s%n City: %s%n",
-                        host_id, first_name, last_name, phone, email, city);
-            }
+            ResultSetPrinter.printResultSet(resultSet);
+//            while (resultSet.next()) {
+//                int host_id = resultSet.getInt("host_id");
+//                String first_name = resultSet.getString("first_name");
+//                String last_name = resultSet.getString("last_name");
+//                String phone = resultSet.getString("phone");
+//                String email = resultSet.getString("email");
+//                String city = resultSet.getString("city");
+//
+//                System.out.printf("Host ID: %d%n First Name: %s%n Last Name: %s%n Phone: %s%n" +
+//                                "Email: %s%n City: %s%n",
+//                        host_id, first_name, last_name, phone, email, city);
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -462,22 +464,23 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllPodcast();
 
         try {
-            while (resultSet.next()) {
-                int podcast_id = resultSet.getInt("podcast_id");
-                int total_subscribers = resultSet.getInt("total_subscribers");
-                String podcast_name = resultSet.getString("podcast_name");
-                String country = resultSet.getString("country");
-                int episode_count = resultSet.getInt("episode_count");
-                String genres = resultSet.getString("genres");
-                String language = resultSet.getString("language");
-                String sponsors = resultSet.getString("sponsors");
-                double rating = resultSet.getDouble("rating");
-
-                System.out.printf("Podcast podcast_id: %d%n Podcast Name: %s%n Podcast total_subscribers: %d%n" +
-                                "Podcast country: %s%n Podcast episode_count: %d%n Podcast genres: %s%n" +
-                                "Podcast language: %s%n Podcast sponsors: %s%n Podcast rating: %.2f%n ",
-                        podcast_id, podcast_name, total_subscribers, country, episode_count, genres, language, sponsors, rating);
-            }
+              ResultSetPrinter.printResultSet(resultSet);
+//            while (resultSet.next()) {
+//                int podcast_id = resultSet.getInt("podcast_id");
+//                int total_subscribers = resultSet.getInt("total_subscribers");
+//                String podcast_name = resultSet.getString("podcast_name");
+//                String country = resultSet.getString("country");
+//                int episode_count = resultSet.getInt("episode_count");
+//                String genres = resultSet.getString("genres");
+//                String language = resultSet.getString("language");
+//                String sponsors = resultSet.getString("sponsors");
+//                double rating = resultSet.getDouble("rating");
+//
+//                System.out.printf("Podcast podcast_id: %d%n Podcast Name: %s%n Podcast total_subscribers: %d%n" +
+//                                "Podcast country: %s%n Podcast episode_count: %d%n Podcast genres: %s%n" +
+//                                "Podcast language: %s%n Podcast sponsors: %s%n Podcast rating: %.2f%n ",
+//                        podcast_id, podcast_name, total_subscribers, country, episode_count, genres, language, sponsors, rating);
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -488,21 +491,22 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllArtists();
 
         try {
-            while (resultSet.next()) {
-                int artist_id = resultSet.getInt("artist_id");
-                String artist_name = resultSet.getString("artist_name");
-                String status = resultSet.getString("status");
-                int monthly_listener = resultSet.getInt("monthly_listener");
-                String type = resultSet.getString("type");
-                String country = resultSet.getString("country");
-                String primary_genre = resultSet.getString("primary_genre");
-                String record_label = resultSet.getString("record_label");
-
-                System.out.printf("Artists artist_id: %d%n Artists Name: %s%n Artists status: %s%n" +
-                                "Artists monthly_listener: %s%n Artists type: %s%n Artists country: %s%n Songs primary_genre: %s%n" +
-                                "Artists record_label: %s%n ",
-                        artist_id, artist_name, status, monthly_listener, type, country, primary_genre, record_label);
-            }
+              ResultSetPrinter.printResultSet(resultSet);
+//            while (resultSet.next()) {
+//                int artist_id = resultSet.getInt("artist_id");
+//                String artist_name = resultSet.getString("artist_name");
+//                String status = resultSet.getString("status");
+//                int monthly_listener = resultSet.getInt("monthly_listener");
+//                String type = resultSet.getString("type");
+//                String country = resultSet.getString("country");
+//                String primary_genre = resultSet.getString("primary_genre");
+//                String record_label = resultSet.getString("record_label");
+//
+//                System.out.printf("Artists artist_id: %d%n Artists Name: %s%n Artists status: %s%n" +
+//                                "Artists monthly_listener: %s%n Artists type: %s%n Artists country: %s%n Songs primary_genre: %s%n" +
+//                                "Artists record_label: %s%n ",
+//                        artist_id, artist_name, status, monthly_listener, type, country, primary_genre, record_label);
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -513,24 +517,25 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllSongs();
 
         try {
-            while (resultSet.next()) {
-                int song_id = resultSet.getInt("song_id");
-                String song_title = resultSet.getString("song_title");
-                String duration = resultSet.getString("duration");
-                String genres = resultSet.getString("genres");
-                int play_count = resultSet.getInt("play_count");
-                String language = resultSet.getString("language");
-                BigDecimal royalty_rate = resultSet.getBigDecimal("royalty_rate");
-                String release_date = resultSet.getString("release_date");
-                String release_country = resultSet.getString("release_country");
-                int album = resultSet.getInt("album");
-
-
-                System.out.printf("Songs ID: %d%n Songs Name: %s%n Songs duration: %s%n" +
-                                "Songs genres: %s%n Songs play_count: %d%n Songs language: %s%n Songs royalty_rate: %.2f%n" +
-                                "Songs release_date: %s%n Songs release_country: %s%n Songs album: %d%n",
-                        song_id, song_title,duration,genres, play_count,language,royalty_rate,release_date,release_country, album);
-            }
+              ResultSetPrinter.printResultSet(resultSet);
+//            while (resultSet.next()) {
+//                int song_id = resultSet.getInt("song_id");
+//                String song_title = resultSet.getString("song_title");
+//                String duration = resultSet.getString("duration");
+//                String genres = resultSet.getString("genres");
+//                int play_count = resultSet.getInt("play_count");
+//                String language = resultSet.getString("language");
+//                BigDecimal royalty_rate = resultSet.getBigDecimal("royalty_rate");
+//                String release_date = resultSet.getString("release_date");
+//                String release_country = resultSet.getString("release_country");
+//                int album = resultSet.getInt("album");
+//
+//
+//                System.out.printf("Songs ID: %d%n Songs Name: %s%n Songs duration: %s%n" +
+//                                "Songs genres: %s%n Songs play_count: %d%n Songs language: %s%n Songs royalty_rate: %.2f%n" +
+//                                "Songs release_date: %s%n Songs release_country: %s%n Songs album: %d%n",
+//                        song_id, song_title,duration,genres, play_count,language,royalty_rate,release_date,release_country, album);
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
