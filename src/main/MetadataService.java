@@ -1,6 +1,5 @@
 package main;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -9,10 +8,6 @@ import java.time.format.DateTimeFormatter;
 public class MetadataService extends MediaStreamingService {
     public MetadataService(MediaStreamingService mediaStreamingService) {
         super(mediaStreamingService.connection);
-    }
-
-    public MetadataService(Connection connection) {
-        super(connection);
     }
 
     public void userSubscribedPodcast(int userId, int podcastId, String yearMonth) {
@@ -81,7 +76,6 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-
     public void updatePlayCountForSongs(int songId, int playCount) {
         updateSong(songId, null, null, null, playCount, null, null, null, null);
     }
@@ -92,14 +86,7 @@ public class MetadataService extends MediaStreamingService {
     // count through listened records table, only sum up current month record.
 
     public void updateSongPlayCount() {
-        String sql = "UPDATE Songs\n" +
-                "SET play_count = IFNULL((\n" +
-                "  SELECT COUNT(*)\n" +
-                "  FROM listenedSong\n" +
-                "  WHERE listenedSong.song_id = Songs.song_id\n" +
-                "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
-                "  GROUP BY song_id\n" +
-                "),0) \n";
+        String sql = "UPDATE Songs\n" + "SET play_count = IFNULL((\n" + "  SELECT COUNT(*)\n" + "  FROM listenedSong\n" + "  WHERE listenedSong.song_id = Songs.song_id\n" + "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" + "  GROUP BY song_id\n" + "),0) \n";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
@@ -113,15 +100,7 @@ public class MetadataService extends MediaStreamingService {
     }
 
     public void updateMonthlyListenerForArtists() {
-        String sql = "UPDATE Artists a\n" +
-                "SET monthly_listener = IFNULL((\n" +
-                "  SELECT COUNT(*)\n" +
-                "  FROM listenedSong l\n" +
-                "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" +
-                "  WHERE p.artist_id  = a.artist_id \n" +
-                "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
-                "  GROUP BY p.artist_id\n" +
-                "),0)";
+        String sql = "UPDATE Artists a\n" + "SET monthly_listener = IFNULL((\n" + "  SELECT COUNT(*)\n" + "  FROM listenedSong l\n" + "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" + "  WHERE p.artist_id  = a.artist_id \n" + "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" + "  GROUP BY p.artist_id\n" + "),0)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
@@ -134,17 +113,8 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-
     public void updatePodcastEpisodeListeningCount(int episodeId, String date) {
-        String sql = "UPDATE PodcastEpisodes\n" +
-                "SET listening_count = IFNULL((\n" +
-                "  SELECT COUNT(*)\n" +
-                "  FROM listenedPodcast\n" +
-                "  WHERE listenedPodcast.podcast_episode_id = PodcastEpisodes.podcast_episode_id\n" +
-                "    AND listenedPodcast.podcast_episode_id = ?\n" +
-                "    AND DATE_FORMAT(listenedPodcast.date, '%Y-%m') = ?\n" +
-                "), 0)\n" +
-                "WHERE podcast_episode_id = ?";
+        String sql = "UPDATE PodcastEpisodes\n" + "SET listening_count = IFNULL((\n" + "  SELECT COUNT(*)\n" + "  FROM listenedPodcast\n" + "  WHERE listenedPodcast.podcast_episode_id = PodcastEpisodes.podcast_episode_id\n" + "    AND listenedPodcast.podcast_episode_id = ?\n" + "    AND DATE_FORMAT(listenedPodcast.date, '%Y-%m') = ?\n" + "), 0)\n" + "WHERE podcast_episode_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, episodeId);
             statement.setString(2, date);
@@ -160,15 +130,8 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-
     public void updateTotalCountOfSubscribers(int podcastId) {
-        String sql = "UPDATE Podcast p\n" +
-                "SET total_subscribers = IFNULL((\n" +
-                "  SELECT COUNT(*)\n" +
-                "  FROM subscribedPodcast s\n" +
-                "  WHERE p.podcast_id = s.podcast_id\n" +
-                "), 0)\n" +
-                "WHERE p.podcast_id = ?; ";
+        String sql = "UPDATE Podcast p\n" + "SET total_subscribers = IFNULL((\n" + "  SELECT COUNT(*)\n" + "  FROM subscribedPodcast s\n" + "  WHERE p.podcast_id = s.podcast_id\n" + "), 0)\n" + "WHERE p.podcast_id = ?; ";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, podcastId);
@@ -183,15 +146,8 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-
     public void updateRating(int podcastId) {
-        String sql = "UPDATE Podcast\n" +
-                "SET rating = IFNULL((\n" +
-                "  SELECT AVG(rating)\n" +
-                "  FROM ratedPodcast\n" +
-                "  WHERE podcast_id = ?\n" +
-                "), 0)\n" +
-                "WHERE podcast_id = ?";
+        String sql = "UPDATE Podcast\n" + "SET rating = IFNULL((\n" + "  SELECT AVG(rating)\n" + "  FROM ratedPodcast\n" + "  WHERE podcast_id = ?\n" + "), 0)\n" + "WHERE podcast_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, podcastId);
             statement.setInt(2, podcastId);

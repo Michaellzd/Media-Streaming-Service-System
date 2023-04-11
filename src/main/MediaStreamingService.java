@@ -3,10 +3,8 @@ package main;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 
 public class MediaStreamingService {
@@ -73,8 +71,7 @@ public class MediaStreamingService {
                 statement.setNull(3, Types.VARCHAR);
             }
 
-            if (newPlayCount != null)
-            {
+            if (newPlayCount != null) {
                 statement.setInt(4, newPlayCount);
             } else {
                 statement.setNull(4, Types.INTEGER);
@@ -340,7 +337,7 @@ public class MediaStreamingService {
         }
     }
 
-    public void addUser(int listener_id, String first_name,String last_name,String phone, String email, int status_of_subscription){
+    public void addUser(int listener_id, String first_name, String last_name, String phone, String email, int status_of_subscription) {
         String sql = "INSERT INTO User (listener_id,first_name, last_name,phone,email,status_of_subscription) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -392,7 +389,7 @@ public class MediaStreamingService {
 //
 //    }
 
-    public void addPodcastHost(int host_id, String first_name,String last_name,String phone,String email,String city){
+    public void addPodcastHost(int host_id, String first_name, String last_name, String phone, String email, String city) {
 
         // Implement the logic to delete a song from the database
         String sql = "INSERT INTO PodcastHosts (host_id,first_name,last_name,phone,email,city) VALUES ( ?, ?, ?, ?, ?, ?)";
@@ -405,7 +402,6 @@ public class MediaStreamingService {
             statement.setString(4, phone);
             statement.setString(5, email);
             statement.setString(6, city);
-
 
 
             int rowsAffected = statement.executeUpdate();
@@ -442,7 +438,7 @@ public class MediaStreamingService {
         return pstmt.executeQuery();
     }
 
-    public ResultSet listAllAlbum() throws SQLException{
+    public ResultSet listAllAlbum() throws SQLException {
         String sql = "SELECT * FROM Album";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         return pstmt.executeQuery();
@@ -488,10 +484,10 @@ public class MediaStreamingService {
                 "JOIN performed p ON s.song_id = p.song_id " +
                 "JOIN Artists a ON p.artist_id = a.artist_id " +
                 "WHERE a.artist_name = ?";
-        
-      PreparedStatement statement = connection.prepareStatement(sql);
-      statement.setString(1, artist_name);
-            
+
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, artist_name);
+
         return statement.executeQuery();
     }
 
@@ -567,6 +563,7 @@ public class MediaStreamingService {
         }
 
     }
+
     //get Record label的id 用于assign
     public int getRecordLabelIdByName(String record_label_name) {
         String sql = "SELECT record_label_id FROM RecordLabel WHERE record_label_name = ?";
@@ -708,8 +705,6 @@ public class MediaStreamingService {
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
-
-
 
 
     }

@@ -10,8 +10,8 @@ public class ResultSetPrinter {
     public static void printResultSet(ResultSet rs) throws SQLException {
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
         int ColumnCount = resultSetMetaData.getColumnCount();
-        System.out.println("column count:"+ColumnCount);
-        if(ColumnCount==0){
+        System.out.println("column count:" + ColumnCount);
+        if (ColumnCount == 0) {
             return;
         }
         int[] columnMaxLengths = new int[ColumnCount];
@@ -21,12 +21,12 @@ public class ResultSetPrinter {
             for (int i = 0; i < ColumnCount; i++) {
                 columnStr[i] = rs.getString(i + 1);
                 columnMaxLengths[i] = Math.max(columnMaxLengths[i], (columnStr[i] == null) ? 0 : columnStr[i].length());
-                columnMaxLengths[i] = Math.max(columnMaxLengths[i],resultSetMetaData.getColumnName(i+1).length());
+                columnMaxLengths[i] = Math.max(columnMaxLengths[i], resultSetMetaData.getColumnName(i + 1).length());
             }
             results.add(columnStr);
         }
         System.out.println(results);
-        if(results.size()==0){
+        if (results.size() == 0) {
             return;
         }
         printSeparator(columnMaxLengths);
@@ -44,7 +44,6 @@ public class ResultSetPrinter {
         }
         printSeparator(columnMaxLengths);
     }
-
 
     private static void printColumnName(ResultSetMetaData resultSetMetaData, int[] columnMaxLengths) throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();

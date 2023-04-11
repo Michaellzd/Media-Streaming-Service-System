@@ -1,6 +1,5 @@
 package main;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -82,10 +81,10 @@ public class MetadataProcess {
         int podcastId = scanner.nextInt();
         System.out.println("Enter date YYYY-mm");
         String date = scanner.next();
-        metadataService.userSubscribedPodcast(userId,podcastId,date);
+        metadataService.userSubscribedPodcast(userId, podcastId, date);
     }
 
-    private static void updateRating(MetadataService metadataService, Scanner scanner){
+    private static void updateRating(MetadataService metadataService, Scanner scanner) {
         System.out.print("Enter podcast id to update rating: ");
         int podcastId = scanner.nextInt();
         metadataService.updateRating(podcastId);
@@ -97,9 +96,10 @@ public class MetadataProcess {
 //        int artistId = scanner.nextInt();
 //        System.out.println("Enter the month (yyyy-MM):");
 //        String month = scanner.next();
-          metadataService.updateMonthlyListenerForArtists();
+        metadataService.updateMonthlyListenerForArtists();
     }
-    private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner){
+
+    private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner) {
         System.out.print("Enter podcast ID: ");
         int podcastId = scanner.nextInt();
 
@@ -112,13 +112,15 @@ public class MetadataProcess {
         metadataService.addPodcastRatings(podcastId, userId, rating);
 
     }
-    private static void updatePodcastSubscribers(MetadataService metadataService, Scanner scanner){
+
+    private static void updatePodcastSubscribers(MetadataService metadataService, Scanner scanner) {
         System.out.print("Enter the podcast id: ");
         int podcastId = scanner.nextInt();
         metadataService.updateTotalCountOfSubscribers(podcastId);
 
     }
-    private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
+
+    private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner) {
 
         System.out.println("Enter listener ID:");
         int listenerId = scanner.nextInt();
@@ -131,7 +133,8 @@ public class MetadataProcess {
         metadataService.addUserListenedPodcast(listenerId, podcastEpisodeId, yearMonth, listenCount);
 
     }
-    private static void updatePodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner){
+
+    private static void updatePodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner) {
         System.out.println("Enter the podcast episode ID:");
         int episodeId = scanner.nextInt();
         System.out.println("Enter the date (yyyy-MM):");
@@ -178,7 +181,7 @@ public class MetadataProcess {
         }
     }
 
-    private static void enterSongPlayCount(MetadataService metadataService,Scanner scanner){
+    private static void enterSongPlayCount(MetadataService metadataService, Scanner scanner) {
         System.out.println("Enter the user ID:");
         int userId = scanner.nextInt();
         System.out.println("Enter the song ID:");
@@ -190,13 +193,14 @@ public class MetadataProcess {
         int count = scanner.nextInt();
         metadataService.addUserListenedSong(userId, songId, month, count);
     }
-    private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner){
+
+    private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner) {
 //        System.out.println("Enter the song ID:");
 //        int songId = scanner.nextInt();
 //        System.out.println("Enter the date (yyyy-MM):");
 //        String date = scanner.next();
 //        metadataService.updateSongPlayCount(songId,date);
-          metadataService.updateSongPlayCount();
+        metadataService.updateSongPlayCount();
     }
 
 }

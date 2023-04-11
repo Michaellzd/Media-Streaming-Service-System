@@ -1,11 +1,10 @@
 package main;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class PaymentProcess {
+
     public static void paymentProcessingMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) throws SQLException {
         int choice;
         do {

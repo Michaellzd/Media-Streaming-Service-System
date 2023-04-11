@@ -45,13 +45,13 @@ public class ReportProcess {
 
             switch (choice) {
                 case 1:
-                    reportPerArtists(mediaStreamingService, scanner);
+                    reportPerArtists(mediaStreamingService);
                     break;
                 case 2:
-                    reportPerSongs(mediaStreamingService, scanner);
+                    reportPerSongs(mediaStreamingService);
                     break;
                 case 3:
-                    reportPerAlbum(mediaStreamingService, scanner);
+                    reportPerAlbum(mediaStreamingService);
                     break;
                 case 4:
                     reportGivenArtists(mediaStreamingService, scanner);
@@ -72,10 +72,10 @@ public class ReportProcess {
                     getPeriodPaymentToHost(paymentService, scanner);
                     break;
                 case 10:
-                    getStreamingServiceMonthlyRevenue(paymentService, scanner);
+                    getStreamingServiceMonthlyRevenue(paymentService);
                     break;
                 case 11:
-                    getStreamingServiceYearlyRevenue(paymentService, scanner);
+                    getStreamingServiceYearlyRevenue(paymentService);
                     break;
             }
         } while (choice != 0);
@@ -133,7 +133,7 @@ public class ReportProcess {
         }
     }
 
-    private void reportPerAlbum(MediaStreamingService mediaStreamingService, Scanner scanner) throws SQLException {
+    private void reportPerAlbum(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("Report Monthly play count per Album:");
         ResultSet resultSet = mediaStreamingService.reportPerAlbums();
 
@@ -153,7 +153,7 @@ public class ReportProcess {
 
     }
 
-    private void reportPerSongs(MediaStreamingService mediaStreamingService, Scanner scanner) throws SQLException {
+    private void reportPerSongs(MediaStreamingService mediaStreamingService) throws SQLException {
 
         System.out.println("Report Monthly play count per Song:");
         ResultSet resultSet = mediaStreamingService.reportPerSongs();
@@ -173,7 +173,7 @@ public class ReportProcess {
         }
     }
 
-    private void reportPerArtists(MediaStreamingService mediaStreamingService, Scanner scanner) throws SQLException {
+    private void reportPerArtists(MediaStreamingService mediaStreamingService) throws SQLException {
 
         System.out.println("Report Monthly play count per artist:");
         ResultSet resultSet = mediaStreamingService.reportPerArtists();
@@ -231,20 +231,20 @@ public class ReportProcess {
 
         System.out.println("Input start date:");
         String start = scanner.next();
-        if (!isValidDateString(start)){
+        if (!isValidDateString(start)) {
             return;
         }
 
         System.out.println("Input end date:");
         String end = scanner.next();
-        if (!isValidDateString(end)){
+        if (!isValidDateString(end)) {
             return;
         }
 
         ResultSet resultSet = paymentService.getPeriodPaymentToArtist(start, end);
 
         try {
-             ResultSetPrinter.printResultSet(resultSet);
+            ResultSetPrinter.printResultSet(resultSet);
 //            while (resultSet.next()) {
 //                String artistName = resultSet.getString("artist_name");
 //                double totalPayment = resultSet.getDouble("total_payment");
@@ -291,7 +291,7 @@ public class ReportProcess {
         }
     }
 
-    private void getStreamingServiceMonthlyRevenue(PaymentService paymentService, Scanner scanner) throws SQLException {
+    private void getStreamingServiceMonthlyRevenue(PaymentService paymentService) throws SQLException {
 
         System.out.println("Report total revenue of the streaming service per month:");
 
@@ -300,22 +300,22 @@ public class ReportProcess {
         try {
             ResultSetPrinter.printResultSet(resultSet);
             // while (resultSet.next()) {
-                // String hostPayment = resultSet.getString("host_payment");
-                // String artistPayment = resultSet.getString("artist_payment");
-                // String labelPayment = resultSet.getString("label_payment");
-                // double income = resultSet.getDouble("income");
-                // String yearMonth = resultSet.getString("yearmonth");
-                // double revenue = resultSet.getDouble("revenue");
+            // String hostPayment = resultSet.getString("host_payment");
+            // String artistPayment = resultSet.getString("artist_payment");
+            // String labelPayment = resultSet.getString("label_payment");
+            // double income = resultSet.getDouble("income");
+            // String yearMonth = resultSet.getString("yearmonth");
+            // double revenue = resultSet.getDouble("revenue");
 
-                // System.out.printf("Year-Month: %s%n Host Payment: %s%n Artist Payment: %s%n Label Payment: %s%n Income: %s%n Revenue: %s%n%n",
-                // yearMonth, hostPayment, artistPayment, labelPayment, income, revenue);
+            // System.out.printf("Year-Month: %s%n Host Payment: %s%n Artist Payment: %s%n Label Payment: %s%n Income: %s%n Revenue: %s%n%n",
+            // yearMonth, hostPayment, artistPayment, labelPayment, income, revenue);
             // }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void getStreamingServiceYearlyRevenue(PaymentService paymentService, Scanner scanner) throws SQLException {
+    private void getStreamingServiceYearlyRevenue(PaymentService paymentService) throws SQLException {
 
         System.out.println("Report total revenue of the streaming service per year:");
 

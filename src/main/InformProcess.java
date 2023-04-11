@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class InformProcess {
 
-    public  void informationProcessingMenu(MediaStreamingService mediaStreamingService, Scanner scanner) throws SQLException {
+    public void informationProcessingMenu(MediaStreamingService mediaStreamingService, Scanner scanner) throws SQLException {
         int choice;
         do {
             System.out.println("Information Processing Menu");
@@ -56,8 +56,8 @@ public class InformProcess {
                 case 5:
                     assignArtistsToAlbumsMenu(mediaStreamingService, scanner);
                     break;
-                    
-                    
+
+
                 case 6:
                     assignArtistsToRecordLabels(mediaStreamingService, scanner);
                     break;
@@ -86,13 +86,13 @@ public class InformProcess {
                     DisplayPodcastEpisode(mediaStreamingService);
                     break;
                 case 14:
-                    addRecordLabel(mediaStreamingService,scanner);
+                    addRecordLabel(mediaStreamingService, scanner);
                     break;
                 case 15:
-                    addPodcast(mediaStreamingService,scanner);
+                    addPodcast(mediaStreamingService, scanner);
                     break;
                 case 16:
-                    addAlbum(mediaStreamingService,scanner);
+                    addAlbum(mediaStreamingService, scanner);
                     break;
 
             }
@@ -259,7 +259,6 @@ public class InformProcess {
     }
 
 
-
     private void addPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Podcast Id: ");
         int podcastId = scanner.nextInt();
@@ -335,7 +334,7 @@ public class InformProcess {
                     System.out.println("Enter status (active/retired): ");
                     String status = scanner.next();
 
-                    int monthly_listener =0;
+                    int monthly_listener = 0;
                     System.out.println("Enter type (composer/musician/Band): ");
                     String type = scanner.next();
                     System.out.println("Enter country: ");
@@ -345,7 +344,6 @@ public class InformProcess {
 
 
                     mediaStreamingService.addArtist(artist_id, artist_name, status, monthly_listener, type, country, primary_genre);
-
 
 
                     break;
@@ -401,7 +399,7 @@ public class InformProcess {
         } while (choice != 0);
     }
 
-    private void addRecordLabel(MediaStreamingService mediaStreamingService,Scanner scanner) {
+    private void addRecordLabel(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Record Label Id: ");
         int recordLabelId = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character
@@ -409,7 +407,7 @@ public class InformProcess {
         System.out.print("Enter Record Label Name: ");
         String recordLabelName = scanner.nextLine();
 
-        mediaStreamingService.addRecordLabel(recordLabelId,recordLabelName);
+        mediaStreamingService.addRecordLabel(recordLabelId, recordLabelName);
     }
 
     private void DisplayPodcastEpisode(MediaStreamingService mediaStreamingService) throws SQLException {
@@ -464,7 +462,7 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllPodcast();
 
         try {
-              ResultSetPrinter.printResultSet(resultSet);
+            ResultSetPrinter.printResultSet(resultSet);
 //            while (resultSet.next()) {
 //                int podcast_id = resultSet.getInt("podcast_id");
 //                int total_subscribers = resultSet.getInt("total_subscribers");
@@ -491,7 +489,7 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllArtists();
 
         try {
-              ResultSetPrinter.printResultSet(resultSet);
+            ResultSetPrinter.printResultSet(resultSet);
 //            while (resultSet.next()) {
 //                int artist_id = resultSet.getInt("artist_id");
 //                String artist_name = resultSet.getString("artist_name");
@@ -517,7 +515,7 @@ public class InformProcess {
         ResultSet resultSet = mediaStreamingService.listAllSongs();
 
         try {
-              ResultSetPrinter.printResultSet(resultSet);
+            ResultSetPrinter.printResultSet(resultSet);
 //            while (resultSet.next()) {
 //                int song_id = resultSet.getInt("song_id");
 //                String song_title = resultSet.getString("song_title");
@@ -540,7 +538,6 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
 
 
     private void manageSongsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
@@ -686,7 +683,7 @@ public class InformProcess {
         } while (choice != 0);
     }
 
-    public void managePodcastHostsMenu(MediaStreamingService mediaStreamingService, Scanner scanner){
+    public void managePodcastHostsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
             System.out.println("Manage PodcastHosts Menu");
@@ -718,7 +715,7 @@ public class InformProcess {
 
                     scanner.nextLine();
 
-                    mediaStreamingService.addPodcastHost(host_id,firstname,lastname,phone,email,city);
+                    mediaStreamingService.addPodcastHost(host_id, firstname, lastname, phone, email, city);
                     break;
                 case 2:
                     System.out.print("Enter host_id to update: ");
@@ -771,7 +768,7 @@ public class InformProcess {
 
     }
 
-    public void addUser(MediaStreamingService mediaStreamingService, Scanner scanner){
+    public void addUser(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter User Id: ");
         int userId = scanner.nextInt();
         System.out.println("Enter firstname: ");
@@ -786,12 +783,11 @@ public class InformProcess {
         String email = scanner.next();
 
 
-
         System.out.print("Enter subscriber status(0:inactive/1:active): ");
         int status = scanner.nextInt();
         scanner.nextLine();
 
-        mediaStreamingService.addUser(userId,firstname,lastname,phone,email,status);
+        mediaStreamingService.addUser(userId, firstname, lastname, phone, email, status);
 //        scanner.nextLine();
 //        mediaStreamingService.addUser(userId,firstname,lastname,phone,email,status);
 //        if(status==1){

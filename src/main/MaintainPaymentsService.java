@@ -1,8 +1,6 @@
 package main;
 
-import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 
 public class MaintainPaymentsService extends MediaStreamingService {
     public MaintainPaymentsService(Connection connection) {
@@ -312,7 +310,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
         // Implement the logic to delete a song from the database
 //        All subscription fee is paid to streaming account 2
         String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
-        String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
+        String sql2 = "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
                 "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
                 "NOW() as date, " +
                 "User.listener_id as paid_user_id, " +
@@ -336,8 +334,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 if (resultSet.next()) {
                     updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);
                     System.out.println("paidService added successfully.");
-                }
-                else{
+                } else {
                     System.out.println("No active user.");
                 }
             } else {

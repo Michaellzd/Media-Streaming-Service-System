@@ -2,9 +2,7 @@ package main;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Scanner;
 
 
@@ -12,6 +10,7 @@ public class DatabaseMenu {
     private static final String DB_URL = "jdbc:mariadb://classdb2.csc.ncsu.edu:3306/pwang25";
     private static final String DB_USER = "pwang25";
     private static final String DB_PASSWORD = "200421429";
+
     //setting your own pwd
     // This is the main menu.
     public static void main(String[] args) {
@@ -19,11 +18,11 @@ public class DatabaseMenu {
             Scanner scanner = new Scanner(System.in);
             int choice;
             MediaStreamingService mediaStreamingService = new MediaStreamingService(connection);
-            MaintainPaymentsService maintainPaymentsService= new MaintainPaymentsService(connection);
+            MaintainPaymentsService maintainPaymentsService = new MaintainPaymentsService(connection);
             PaymentService paymentService = new PaymentService(connection);
-            InformProcess informProcess=new InformProcess();
-            ReportProcess reportProcess=new ReportProcess();
-            PaymentProcess PaymentProcess=new PaymentProcess();
+            InformProcess informProcess = new InformProcess();
+            ReportProcess reportProcess = new ReportProcess();
+            PaymentProcess PaymentProcess = new PaymentProcess();
             System.out.println("All artists");
             ResultSetPrinter.printResultSet(mediaStreamingService.listAllArtists());
             System.out.println("All songs");
@@ -32,7 +31,6 @@ public class DatabaseMenu {
             ResultSetPrinter.printResultSet(mediaStreamingService.listAllAlbum());
             System.out.println("All Podcast");
             ResultSetPrinter.printResultSet(mediaStreamingService.listAllPodcast());
-
 
 
             do {
@@ -58,7 +56,7 @@ public class DatabaseMenu {
                         MetadataProcess.metadataAndRecordsMenu(mediaStreamingService, scanner);
                         break;
                     case 3:
-                        PaymentProcess.paymentProcessingMenu(maintainPaymentsService, scanner);
+                        main.PaymentProcess.paymentProcessingMenu(maintainPaymentsService, scanner);
                         break;
                     case 4:
                         reportProcess.reportsMenu(mediaStreamingService, paymentService, scanner);
@@ -66,22 +64,12 @@ public class DatabaseMenu {
                 }
             } while (choice != 0);
 
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
 
 
     }
-
-
-
-
-
-
-
-
-
 
 
 }
