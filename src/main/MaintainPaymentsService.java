@@ -321,7 +321,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
     public void receiveSubFee(String month) {
         /**
          * Description: Receive monthly payment from subscribers
-         * Assumption: The subscribers' payment is received by account 2
+         * Assumption: The subscribers' payment is received by account 1
          */
 
         /**
@@ -341,7 +341,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
                 "? as date, " +
                 "User.listener_id as paid_user_id, " +
-                "2 as paid_streaming_account_id " +
+                "1 as paid_streaming_account_id " +
                 "FROM User, theMediaStreamingManagement " +
                 "WHERE User.status_of_subscription = 1";
 
@@ -362,7 +362,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
             if (rowsAffected > 0) {
                 ResultSet resultSet = sm1.executeQuery();
                 if (resultSet.next()) {
-                    updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);
+                    updateManagementAccount(1, 10.0 * resultSet.getDouble(1), false);
                     System.out.println("paidService added successfully.");
                     connection.commit();
                 }
