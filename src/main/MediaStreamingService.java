@@ -469,7 +469,7 @@ public class MediaStreamingService {
 
     public ResultSet reportPerSongs() throws SQLException {
 
-        String sql = "SELECT DATE_FORMAT(listenedSong.date, '%Y-%m') as yearmonth, Songs.song_title, COUNT(*) as play_count FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id GROUP BY Songs.song_id";
+        String sql = "SELECT DATE_FORMAT(listenedSong.date, '%Y-%m') as yearmonth, Songs.song_title, COUNT(*) as play_count FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id GROUP BY yearmonth, Songs.song_id";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         return pstmt.executeQuery();
     }
