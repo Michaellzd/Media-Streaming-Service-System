@@ -154,10 +154,8 @@ public class ReportProcess {
     }
 
     private void reportPerSongs(MediaStreamingService mediaStreamingService) throws SQLException {
-
         System.out.println("Report Monthly play count per Song:");
         ResultSet resultSet = mediaStreamingService.reportPerSongs();
-
         try {
             ResultSetPrinter.printResultSet(resultSet);
 //            while (resultSet.next()) {

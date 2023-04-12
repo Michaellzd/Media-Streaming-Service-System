@@ -196,12 +196,11 @@ public class InformProcess {
                     }
 
                     scanner.nextLine(); // Consume the newline character
-                    System.out.println("Enter this episode to a podcast, and the name of the postcast is : ");
+                    System.out.println("Enter this episode to a podcast, and the name of the podcast is : ");
                     String podcast_title = scanner.nextLine();
 
-
                     int podcast_id = mediaStreamingService.getPodcastIdByName(podcast_title);
-
+                    System.out.println(podcast_id);
                     mediaStreamingService.addPodcastEpisode(podcast_episode_id, episode_title, duration, release_date, listening_count, advertisement_count, podcast_id);
                     break;
                 case 2:
@@ -258,7 +257,6 @@ public class InformProcess {
         } while (choice != 0);
     }
 
-
     private void addPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Podcast Id: ");
         int podcastId = scanner.nextInt();
@@ -296,11 +294,12 @@ public class InformProcess {
 
     private void assignArtistsToRecordLabels(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.println("Enter artist name: ");
-        String artistName = scanner.next();
         scanner.nextLine();
+        String artistName = scanner.nextLine();
+        // System.out.println(artistName);
         System.out.println("Enter record label name: ");
         String recordLabelName = scanner.nextLine();
-
+        // System.out.println(recordLabelName);
 
         int recordLabelId = mediaStreamingService.getRecordLabelIdByName(recordLabelName);
         if (recordLabelId != -1) {
@@ -538,7 +537,6 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
 
     private void manageSongsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
@@ -794,4 +792,5 @@ public class InformProcess {
 //            maintainPaymentsService.paidService(userId);
 //        }
     }
+
 }

@@ -64,7 +64,6 @@ public class ResultSetPrinter {
         }
         System.out.println("+");
     }
-
 }
 
 

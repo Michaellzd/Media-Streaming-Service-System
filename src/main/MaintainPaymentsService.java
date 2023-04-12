@@ -2,17 +2,35 @@ package main;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 
 public class MaintainPaymentsService extends MediaStreamingService {
     public MaintainPaymentsService(Connection connection) {
         super(connection);
     }
-
-    public ResultSet monthlyPaymentForGivenSong(int songId) {
-        String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m'), s.song_title \n" +
+    public void setListenedSongToArtistIsPaid(int songId, String yearmonth){
+        String sql = "UPDATE listenedSong SET isPaid = 'true' WHERE song_id = ? AND DATE_FORMAT(`date`, '%Y-%m') = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            statement.setString(2,yearmonth);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    public void setListenedSongToLabelIsPaid(int songId, String yearmonth){
+        String sql = "UPDATE listenedSong SET isPaidLabel = 'true' WHERE song_id = ? AND DATE_FORMAT(`date`, '%Y-%m') = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            statement.setString(2,yearmonth);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    public ResultSet monthlyPaymentForGivenSongForArtist(int songId) {
+        String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m') AS yearmonth, s.song_title \n" +
                 "  FROM listenedSong l LEFT JOIN Songs s ON l.song_id =s.song_id \n" +
-                "  WHERE s.song_id = ?\n" +
+                "  WHERE s.song_id = ? \n AND l.isPaid= 'false'" +
                 "  GROUP BY s.song_id,DATE_FORMAT(`date`,'%Y-%m');\n";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, songId);
@@ -25,7 +43,22 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
         return null;
     }
-
+    public ResultSet monthlyPaymentForGivenSongForLabel(int songId) {
+        String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m') AS yearmonth, s.song_title \n" +
+                "  FROM listenedSong l LEFT JOIN Songs s ON l.song_id =s.song_id \n" +
+                "  WHERE s.song_id = ? \n AND l.isPaidLabel= 'false'" +
+                "  GROUP BY s.song_id,DATE_FORMAT(`date`,'%Y-%m');\n";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
     public void updateManagementAccount(int streamingAccountId, Double amount, Boolean isMinus) throws SQLException {
         String sql = "UPDATE theMediaStreamingManagement SET balance = IF(?, balance - ?, balance + ?) WHERE streaming_account_id = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
@@ -57,8 +90,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
 //        }
     }
 
-
-    public void payLabelForGivenSongGivenMonth(Integer songId, String month, Integer streamingAccountId) {
+    public void payLabelForGivenSongGivenMonth(Integer songId, String yearmonth, Integer streamingAccountId) {
         /**
          * Description: Generate monthly payment to record labels.
          */
@@ -95,13 +127,12 @@ public class MaintainPaymentsService extends MediaStreamingService {
         PreparedStatement sm = null;
 
         try {
-            ResultSet rs = monthlyPaymentForGivenSong(songId);
+            ResultSet rs = monthlyPaymentForGivenSongForLabel(songId);
             Float totalPayment = null;
             rs.beforeFirst();
 
             while (rs.next()) {
-
-                if (rs.getString(2).equals(month)) {
+                if (rs.getString(2).equals(yearmonth)) {
                     totalPayment = rs.getFloat("payment");
                 }
             }
@@ -123,9 +154,9 @@ public class MaintainPaymentsService extends MediaStreamingService {
                     sm.setNull(4, Types.INTEGER);
                 }
 
-                if (month != null) {
-                    sm.setString(3, month+"-28");
-                    sm.setString(5, month);
+                if (yearmonth != null) {
+                    sm.setString(3, yearmonth+"-28");
+                    sm.setString(5, yearmonth);
                 } else {
                     sm.setNull(3, Types.DATE);
                     sm.setNull(5, Types.DATE);
@@ -138,6 +169,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 } else {
                     System.out.println("Paid Successfully");
                     updateManagementAccount(streamingAccountId, totalPayment * 0.3, true);
+                    setListenedSongToLabelIsPaid(songId,yearmonth);
                     connection.commit();
                 }
             }
@@ -158,9 +190,9 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
     }
 
-    public void payArtistForGivenSongGivenMonth(Integer songId, String month, Integer streamingAccountId) {
+    public void payArtistForGivenSongGivenMonth(Integer songId, String yearmonth, Integer streamingAccountId) {
 
-        String sql2 = "INSERT INTO paidArtist (paid_streaming_account_id, paid_artist_id, amount, date) " +
+        String sql = "INSERT INTO paidArtist (paid_streaming_account_id, paid_artist_id, amount, date) " +
                 "SELECT" +
                 " ? as paid_streaming_account_id, " +
                 "performed.artist_id as paid_artist_id, " +
@@ -170,17 +202,18 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "FROM listenedSong " +
                 "INNER JOIN Songs ON listenedSong.song_id = Songs.song_id " +
                 "INNER JOIN performed ON performed.song_id = Songs.song_id " +
-                "WHERE listenedSong.song_id = ? AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
+                "WHERE listenedSong.song_id = ? AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ?" +
                 "GROUP BY performed.artist_id";
 
-        PreparedStatement sm2 = null;
+        PreparedStatement sm = null;
 
         try {
-            ResultSet rs = monthlyPaymentForGivenSong(songId);
+            ResultSet rs = monthlyPaymentForGivenSongForArtist(songId);
             Float totalPayment = null;
             rs.beforeFirst();
+
             while (rs.next()) {
-                if (rs.getString(2).equals(month)) {
+                if (rs.getString(2).equals(yearmonth)) {
                     totalPayment = rs.getFloat("payment");
                 }
             }
@@ -188,38 +221,38 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 System.out.println("No available amount to pay");
             } else {
                 connection.setAutoCommit(false);
-
-                sm2 = connection.prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
-                sm2.setFloat(2, totalPayment);
-
+                sm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                sm.setFloat(2, totalPayment);
                 if (streamingAccountId != null) {
-                    sm2.setInt(1, streamingAccountId);
+                    sm.setInt(1, streamingAccountId);
                 } else {
-                    sm2.setNull(1, Types.INTEGER);
+                    sm.setNull(1, Types.INTEGER);
                 }
 
                 if (songId != null) {
-                    sm2.setInt(4, songId);
+                    sm.setInt(4, songId);
                 } else {
-                    sm2.setNull(4, Types.INTEGER);
+                    sm.setNull(4, Types.INTEGER);
                 }
 
-                if (month != null) {
-                    sm2.setString(3, month + "-28");
-                    sm2.setString(5, month);
-//                sm1.setString(2, month);
+                if (yearmonth != null) {
+                    sm.setString(3, yearmonth + "-28");
+                    sm.setString(5, yearmonth);
+//                sm1.setString(2, yearmonth);
                 } else {
-                    sm2.setNull(3, Types.DATE);
-                    sm2.setNull(5, Types.DATE);
+                    sm.setNull(3, Types.DATE);
+                    sm.setNull(5, Types.DATE);
                 }
-
-                int rowsAffected = sm2.executeUpdate();
+                int rowsAffected = sm.executeUpdate();
                 if (rowsAffected == 0) {
-                    System.out.println("Unable to Pay.");
+                    System.out.println("Unable to pay");
+                    // In this situation, no single row was infected in the whole database,
+                    // So there is no need to rollback or commit.
                 } else {
-                    updateManagementAccount(streamingAccountId, totalPayment * 0.7, true);
-                    connection.commit();
                     System.out.println("Paid Successfully");
+                    updateManagementAccount(streamingAccountId, totalPayment * 0.3, true);
+                    setListenedSongToArtistIsPaid(songId,yearmonth);
+                    connection.commit();
                 }
             }
         } catch (SQLException e) {
@@ -367,6 +400,39 @@ public class MaintainPaymentsService extends MediaStreamingService {
             }
         }
 
+    }
+
+    public ResultSet getDuePaymentOfGivenSong(int songId){
+        String sql = "SELECT a.song_id, a.yearmonth, playcount, s.royalty_rate ,playcount*s.royalty_rate AS due_payment FROM (\n" +
+                "\tSELECT song_id, COUNT(*) playcount, DATE_FORMAT(`date`,'%Y-%m') yearmonth \n" +
+                "\tFROM listenedSong ls \n" +
+                "\tWHERE song_id = ? GROUP BY yearmonth\n" +
+                ") AS a\n" +
+                "LEFT JOIN Songs s ON s.song_id = a.song_id";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public ResultSet getMonthHasDue(int songId){
+        String sql = "SELECT DISTINCT(DATE_FORMAT(`date`,'%Y-%m')) yearmonth FROM listenedSong ls WHERE song_id = ? AND isPaid='false'; \n";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return null;
     }
 
 
