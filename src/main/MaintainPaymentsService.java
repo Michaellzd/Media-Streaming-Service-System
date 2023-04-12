@@ -124,7 +124,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 }
 
                 if (month != null) {
-                    sm.setString(3, month+"-01");
+                    sm.setString(3, month+"-28");
                     sm.setString(5, month);
                 } else {
                     sm.setNull(3, Types.DATE);
@@ -159,7 +159,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
     }
 
     public void payArtistForGivenSongGivenMonth(Integer songId, String month, Integer streamingAccountId) {
-//        Need Transaction Here !!!!!!!!!!!!!
 
         String sql2 = "INSERT INTO paidArtist (paid_streaming_account_id, paid_artist_id, amount, date) " +
                 "SELECT" +
