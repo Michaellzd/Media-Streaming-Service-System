@@ -64,16 +64,20 @@ public class MaintainPaymentsService extends MediaStreamingService {
          */
 
         /**
-         * Payment process includes 2 steps: 1. insert payment information into paidLabel table;
-         *                                   2. update management account balance.
-         * The two steps should be either both successfully executed or both not, so we use transaction here.
-         * Transaction Logic: 1. Set auto_commit to false;
-         *                    2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
-         *                    3. If step 2 throws out exception, rollback;
-         *                       ( Notice that we encapsulated step 2 into function updateManagementAccount,
-         *                       which would throw out exceptions if step 2 failed. )
-         *                    4. Otherwise, step 1 and step 2 were both executed successfully, commit;
-         *                   `5. Set auto_commit back to true.
+         * Payment process includes 2 steps:
+         * 1. insert payment information into paidLabel table;
+         * 2. update management account balance.
+         * The two steps should be either both successfully executed or both not,
+         * so we use transaction here.
+         *
+         * Transaction Logic:
+         * 1. Set auto_commit to false;
+         * 2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
+         * 3. If step 2 throws out exception, rollback;
+         *    ( Notice that we encapsulated step 2 into function updateManagementAccount,
+         *      which would throw out exceptions if step 2 failed. )
+         * 4. Otherwise, step 1 and step 2 were both executed successfully, commit;
+         * 5. Set auto_commit back to true.
          */
 
         String sql = "INSERT INTO paidLabel (paid_streaming_account_id, paid_record_label_id, amount, date) " +
@@ -84,9 +88,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 "FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id " +
                 "INNER JOIN performed ON performed.song_id = Songs.song_id " +
                 "INNER JOIN Artists ON Artists.artist_id = performed.artist_id " +
-                "WHERE listenedSong.song_id = ? AND performed.is_collaborator = 0 " +
+                "WHERE listenedSong.song_id = ? AND performed.is_collaborator = 1 " + // 0 or 1 ? tbd
                 "AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ? " +
-                "AND performed.is_collaborator = 0 " +
                 "LIMIT 1 ";
 
         PreparedStatement sm = null;
@@ -130,7 +133,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 int rowsAffected = sm.executeUpdate();
                 if (rowsAffected == 0) {
                     System.out.println("Unable to pay");
-                    // Notice that in this situation, no single row was infected in the whole database,
+                    // In this situation, no single row was infected in the whole database,
                     // So there is no need to rollback or commit.
                 } else {
                     System.out.println("Paid Successfully");
@@ -203,7 +206,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 }
 
                 if (month != null) {
-                    sm2.setString(3, month + "-01");
+                    sm2.setString(3, month + "-28");
                     sm2.setString(5, month);
 //                sm1.setString(2, month);
                 } else {
@@ -316,14 +319,29 @@ public class MaintainPaymentsService extends MediaStreamingService {
     }
 
     public void receiveSubFee(String month) {
-        // Implement the logic to delete a song from the database
-//        All subscription fee is paid to streaming account 2
+        /**
+         * Description: Receive monthly payment from subscribers
+         * Assumption: The subscribers' payment is received by account 1
+         */
+
+        /**
+         * Payment process includes 2 steps: 1. insert payment information into paidService table;
+         *                                   2. update management account balance.
+         * The two steps should be either both successfully executed or both not, so we use transaction here.
+         * Transaction Logic: 1. Set auto_commit to false;
+         *                    2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
+         *                    3. If step 2 throws out exception, rollback;
+         *                       ( Notice that we encapsulated step 2 into function updateManagementAccount,
+         *                       which would throw out exceptions if step 2 failed. )
+         *                    4. Otherwise, step 1 and step 2 were both executed successfully, commit;
+         *                   `5. Set auto_commit back to true.
+         */
         String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
         String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
                 "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
                 "? as date, " +
                 "User.listener_id as paid_user_id, " +
-                "2 as paid_streaming_account_id " +
+                "1 as paid_streaming_account_id " +
                 "FROM User, theMediaStreamingManagement " +
                 "WHERE User.status_of_subscription = 1";
 
@@ -344,15 +362,19 @@ public class MaintainPaymentsService extends MediaStreamingService {
             if (rowsAffected > 0) {
                 ResultSet resultSet = sm1.executeQuery();
                 if (resultSet.next()) {
-                    updateManagementAccount(2, 10.0 * resultSet.getDouble(1), false);
+                    updateManagementAccount(1, 10.0 * resultSet.getDouble(1), false);
                     System.out.println("paidService added successfully.");
                     connection.commit();
                 }
                 else{
                     System.out.println("No active user.");
+                    // In this situation, no payment is generated from any user,
+                    // so no need to rollback or commit
                 }
             } else {
                 System.out.println("Failed to add paidService.");
+                // In this situation, no single row was infected in the whole database,
+                // So there is no need to rollback or commit.
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
