@@ -80,6 +80,37 @@ public class PaymentProcess {
     private static void payHostsGivenMonthMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();
 
+        System.out.print("Enter host ID: ");
+        String hostIdStr = scanner.nextLine();
+        Integer hostId = Integer.parseInt(hostIdStr);
+
+        System.out.print("Enter payment amount: ");
+        String paymentStr = scanner.nextLine();
+        BigDecimal payment = new BigDecimal(paymentStr);
+
+        System.out.print("Enter month (YYYY-MM): ");
+        String month = scanner.nextLine();
+
+        System.out.print("Enter streaming account ID: ");
+        String streamingAccountIdStr = scanner.nextLine();
+        Integer streamingAccountId = Integer.parseInt(streamingAccountIdStr);
+
+        maintainPaymentsService.payHosts(hostId, payment, month, streamingAccountId);
+    }
+
+
+    private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
+        scanner.nextLine();
+        System.out.println("Enter Month");
+        String month = scanner.nextLine();
+        maintainPaymentsService.receiveSubFee(month);
+    }
+
+
+    /* PAST version of pay host
+     private static void payHostsGivenMonthMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
+        scanner.nextLine();
+
         System.out.print("Enter streaming account ID: ");
         String streamingAccountIdStr = scanner.nextLine();
 
@@ -88,12 +119,6 @@ public class PaymentProcess {
 
         maintainPaymentsService.payHosts(streamingAccountId);
     }
-
-    private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
-        scanner.nextLine();
-        System.out.println("Enter Month");
-        String month = scanner.nextLine();
-        maintainPaymentsService.receiveSubFee(month);
-    }
+    * */
 
 }
