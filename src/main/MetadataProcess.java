@@ -97,7 +97,7 @@ public class MetadataProcess {
 //        int artistId = scanner.nextInt();
 //        System.out.println("Enter the month (yyyy-MM):");
 //        String month = scanner.next();
-          metadataService.updateMonthlyListenerForArtists();
+        metadataService.updateMonthlyListenerForArtists();
     }
     private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner){
         System.out.print("Enter podcast ID: ");
@@ -196,7 +196,7 @@ public class MetadataProcess {
 //        System.out.println("Enter the date (yyyy-MM):");
 //        String date = scanner.next();
 //        metadataService.updateSongPlayCount(songId,date);
-          metadataService.updateSongPlayCount();
+        metadataService.updateSongPlayCount();
     }
 
 }
