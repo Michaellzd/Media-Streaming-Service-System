@@ -465,7 +465,7 @@ public class MediaStreamingService {
 
     public ResultSet reportPerSongs() throws SQLException {
 
-        String sql = "SELECT DATE_FORMAT(listenedSong.date, '%Y-%m') as yearmonth, Songs.song_title, COUNT(*) as play_count FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id GROUP BY Songs.song_id";
+        String sql = "SELECT DATE_FORMAT(listenedSong.date, '%Y-%m') as yearmonth, Songs.song_title, COUNT(*) as play_count FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id GROUP BY yearmonth, Songs.song_id";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         return pstmt.executeQuery();
     }
@@ -641,13 +641,13 @@ public class MediaStreamingService {
     //上面都是Record label
 
     //assign EP to Podcast
-    public int getPodcastIdByName(String podcast_name) {
+    public int getPodcastIdByName(String epname) {
         String sql = "SELECT podcast_id FROM Podcast WHERE podcast_name = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, podcast_name);
+            statement.setString(1, epname);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getInt("podcast_id");
+                return resultSet.getInt("podcast_episode_id");
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
@@ -809,12 +809,12 @@ public class MediaStreamingService {
         return -1;
     }
 
-    public void assignHostToPodcast(int hostId, int podcastId) {
-        String sql = "INSERT INTO hosted (host_id, podcast__id) VALUES (?, ?)";
+    public void assignHostToPodcast(int hostId, int epid) {
+        String sql = "INSERT INTO hosted (host_id, podcast_episode_id) VALUES (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, hostId);
-            statement.setInt(2, podcastId);
+            statement.setInt(2, epid);
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());

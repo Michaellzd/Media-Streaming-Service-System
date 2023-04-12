@@ -102,19 +102,19 @@ public class InformProcess {
     private void assignHostsToPodcastsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         scanner.nextLine();
 
-        System.out.print("Enter podcast name: ");
-        String podcastName = scanner.nextLine();
+        System.out.print("Enter podcast Episodes name: ");
+        String epname = scanner.nextLine();
 
         System.out.print("Enter host name: ");
         String hostName = scanner.nextLine();
 
-        int podcastId = mediaStreamingService.getPodcastIdByName(podcastName);
+        int epid = mediaStreamingService.getPodcastEpisodeIdByTitle(epname);
         int hostId = mediaStreamingService.getHostIdByName(hostName);
 
-        if (podcastId != -1 && hostId != -1) {
-            mediaStreamingService.assignHostToPodcast(hostId, podcastId);
+        if (epid != -1 && hostId != -1) {
+            mediaStreamingService.assignHostToPodcast(hostId, epid);
         } else {
-            System.out.println("Podcast or host not found. Please try again.");
+            System.out.println("Podcast EP or host not found. Please try again.");
         }
     }
 

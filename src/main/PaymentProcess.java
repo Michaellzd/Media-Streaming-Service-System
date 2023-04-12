@@ -13,7 +13,7 @@ public class PaymentProcess {
             System.out.println("Payment Processing Menu");
             System.out.println("1. Make Monthly Payment to Record Label for Given Song");
             System.out.println("2. Make Monthly Payment to Artist for Given Song");
-            System.out.println("3. Make Monthly Payment to Podcast Hosts");
+            System.out.println("3. Make Payment to Podcast Hosts");
             System.out.println("4. Receive Monthly Payment from Subscribers");
 
             System.out.println("0. Back to Main Menu");
@@ -56,13 +56,7 @@ public class PaymentProcess {
         Integer songId = Integer.parseInt(songIdStr);
 
         maintainPaymentsService.payLabelForGivenSongGivenMonth(songId, month, streamingAccountId);
-//        maintainPaymentsService.payArtistForGivenSongGivenMonth(songId, month, streamingAccountId);
 
-//        if (podcastId != -1 && hostId != -1) {
-//            mediaStreamingService.assignHostToPodcast(hostId, podcastId);
-//        } else {
-//            System.out.println("Podcast or host not found. Please try again.");
-//        }
     }
 
     private static void payArtistsForGivenSongGivenMonthMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
@@ -89,8 +83,6 @@ public class PaymentProcess {
         System.out.print("Enter streaming account ID: ");
         String streamingAccountIdStr = scanner.nextLine();
 
-//        System.out.println("Enter Month");
-//        String month = scanner.nextLine();
 
         Integer streamingAccountId = Integer.parseInt(streamingAccountIdStr);
 
