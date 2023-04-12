@@ -27,7 +27,7 @@ public class ReportProcess {
         do {
             System.out.println("Report Menu");
             System.out.println("1. Report Monthly play count per artist");
-            System.out.println("2. Report Monthly play count per given song.");
+            System.out.println("2. Report Monthly play count per song.");
             System.out.println("3. Report Monthly play count per album");
             System.out.println("4. Report all songs given an artist");
             System.out.println("5. Report all songs  given an album");
