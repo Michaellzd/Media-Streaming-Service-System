@@ -3,30 +3,17 @@ package main;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class MetadataService extends MediaStreamingService {
-    public MetadataService(MediaStreamingService mediaStreamingService) {
+    public MetadataService(MediaStreamingService mediaStreamingService){
         super(mediaStreamingService.connection);
     }
-
     public MetadataService(Connection connection) {
         super(connection);
-    }
-
-    public void userSubscribedPodcast(int userId, int podcastId, String yearMonth) {
-        String date = yearMonth + "-01"; // 将月份转换为日期格式
-        String sql = "INSERT INTO subscribedPodcast (date, podcast_id, listener_id) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            statement.setInt(2, podcastId);
-            statement.setInt(3, userId);
-            statement.setString(1, localDate.withDayOfMonth(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
     }
 
     public void addUserListenedPodcast(int listenerId, int podcastEpisodeId, String yearMonth, int listenCount) {
@@ -47,6 +34,7 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
+
     public void addPodcastRatings(int podcastId, int userId, double rating) {
         String sql = "INSERT INTO ratedPodcast (listener_id, podcast_id, rating) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -63,6 +51,9 @@ public class MetadataService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
+
+
 
     public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
         String date = month + "-01"; // 将月份转换为日期格式
@@ -91,16 +82,18 @@ public class MetadataService extends MediaStreamingService {
     }
     // count through listened records table, only sum up current month record.
 
-    public void updateSongPlayCount() {
+    public void updateSongPlayCount(int songId,String date) {
         String sql = "UPDATE Songs\n" +
                 "SET play_count = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong\n" +
                 "  WHERE listenedSong.song_id = Songs.song_id\n" +
-                "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
-                "  GROUP BY song_id\n" +
-                "),0) \n";
+                "   AND listenedSong.song_id = ?\n" +
+                "   AND DATE_FORMAT(listenedSong.date, '%Y-%m') = ?\n" +
+                "),0) ";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            statement.setString(2, date);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Song play count updated successfully.");
@@ -112,17 +105,21 @@ public class MetadataService extends MediaStreamingService {
         }
     }
 
-    public void updateMonthlyListenerForArtists() {
+
+
+    public void updateMonthlyListenerForArtists(int artistId, String month) {
         String sql = "UPDATE Artists a\n" +
                 "SET monthly_listener = IFNULL((\n" +
                 "  SELECT COUNT(*)\n" +
                 "  FROM listenedSong l\n" +
                 "  \tLEFT JOIN performed  p ON p.song_id  = l.song_id \n" +
                 "  WHERE p.artist_id  = a.artist_id \n" +
-                "  \tAND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  \tAND DATE_FORMAT(l.date,'%Y-%m') = ?\n" +
                 "  GROUP BY p.artist_id\n" +
-                "),0)";
+                "),0) WHERE a.artist_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, month);
+            statement.setInt(2, artistId);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Artist Monthly Listener updated successfully.");
@@ -161,14 +158,17 @@ public class MetadataService extends MediaStreamingService {
     }
 
 
+
     public void updateTotalCountOfSubscribers(int podcastId) {
-        String sql = "UPDATE Podcast p\n" +
-                "SET total_subscribers = IFNULL((\n" +
+        String sql = "UPDATE Songs\n" +
+                "SET play_count = COALESCE((\n" +
                 "  SELECT COUNT(*)\n" +
-                "  FROM subscribedPodcast s\n" +
-                "  WHERE p.podcast_id = s.podcast_id\n" +
-                "), 0)\n" +
-                "WHERE p.podcast_id = ?; ";
+                "  FROM listenedSong\n" +
+                "  WHERE listenedSong.song_id = Songs.song_id\n" +
+                "   AND DATE_FORMAT(`date`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m') \n" +
+                "  GROUP BY song_id\n" +
+                "), 0)";
+
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, podcastId);
@@ -182,6 +182,7 @@ public class MetadataService extends MediaStreamingService {
             e.printStackTrace();
         }
     }
+
 
 
     public void updateRating(int podcastId) {
