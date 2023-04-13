@@ -10,6 +10,12 @@ import java.util.*;
 
 public class PaymentProcess {
 
+    /**
+     * Generate payment processing menu
+     * @param maintainPaymentsService
+     * @param scanner
+     * @throws SQLException
+     */
     public static void paymentProcessingMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) throws SQLException {
         int choice;
         do {
@@ -152,6 +158,11 @@ public class PaymentProcess {
         return list;
     }
 
+    /**
+     * Generate monthly payment to record labels for given song.
+     * @param maintainPaymentsService
+     * @param scanner
+     */
     private static void payLabelForGivenSongGivenMonthMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();
 
@@ -171,6 +182,11 @@ public class PaymentProcess {
 
     }
 
+    /**
+     * Generate monthly payment to artists for given song.
+     * @param maintainPaymentsService
+     * @param scanner
+     */
     private static void payArtistsForGivenSongGivenMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
 
         scanner.nextLine();
@@ -190,6 +206,11 @@ public class PaymentProcess {
         maintainPaymentsService.payArtistForGivenSongGivenMonth(songId, month, streamingAccountId);
     }
 
+    /**
+     * Generate payment to podcast hosts.
+     * @param maintainPaymentsService
+     * @param scanner
+     */
     private static void payHostsGivenMonthMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();
 
@@ -211,6 +232,11 @@ public class PaymentProcess {
         maintainPaymentsService.payHosts(hostId, payment, month, streamingAccountId);
     }
 
+    /**
+     * Receive monthly payment from subscribers
+     * @param maintainPaymentsService
+     * @param scanner
+     */
     private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();
         System.out.println("Enter Month");
@@ -219,7 +245,11 @@ public class PaymentProcess {
     }
 
 
-
+    /**
+     * Calculate payment amount based on the episodes and pay to podcast hosts.
+     * @param maintainPaymentsService
+     * @param scanner
+     */
      private static void payHostsCalMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();
 
