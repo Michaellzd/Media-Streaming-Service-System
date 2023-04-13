@@ -311,8 +311,12 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
     }
 
+    /**
+     * to calculate payment amount to hosts
+     * @return result set
+     */
     public ResultSet PaymentToHosts() {
-        String sql = "SELECT SUM((500 + PodcastEpisodes.advertisement_count * 100)) as payment " +
+        String sql = "SELECT SUM((10 + PodcastEpisodes.advertisement_count * 100)) as payment " +
                 "FROM PodcastEpisodes " +
                 "INNER JOIN hosted ON PodcastEpisodes.podcast_episode_id = hosted.podcast_episode_id " +
                 "INNER JOIN PodcastHosts ON hosted.host_id = PodcastHosts.host_id ";
@@ -496,10 +500,10 @@ public class MaintainPaymentsService extends MediaStreamingService {
         return null;
     }
 
-
-
-    //past version
-
+    /**
+     * To calculate the amount based on adds and episodes and then make payment to podcast hosts.
+     * @param streamingAccountId
+     */
      public void payHostsCal(Integer streamingAccountId) {
         String sql = "INSERT INTO paidHost (paid_host_id, amount, date, paid_streaming_account_id) " +
                 "SELECT DISTINCT PodcastHosts.host_id as paid_host_id, " +
