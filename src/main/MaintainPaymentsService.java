@@ -122,9 +122,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
             System.out.println("Error: Unable to update management account balance.");
             throw new SQLException();
         }
-//        } catch (SQLException e) {
-//            System.out.println("Error: " + e.getMessage());
-//        }
     }
     /**
      * Description: Generate monthly payment to record labels.
@@ -226,6 +223,13 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
     }
 
+    /**
+     * To generate monthly payment to artists for given song.
+     * Including 1) insert into paidArtist table; 2) update management account
+     * @param songId
+     * @param yearmonth
+     * @param streamingAccountId
+     */
     public void payArtistForGivenSongGivenMonth(Integer songId, String yearmonth, Integer streamingAccountId) {
 
         String sql = "INSERT INTO paidArtist (paid_streaming_account_id, paid_artist_id, amount, date) " +
@@ -366,6 +370,8 @@ public class MaintainPaymentsService extends MediaStreamingService {
             }
         }
     }
+
+
     /**
      * Description: Receive monthly payment from subscribers
      * Assumption: The subscribers' payment is received by account 1
@@ -494,65 +500,63 @@ public class MaintainPaymentsService extends MediaStreamingService {
 
     //past version
 
-     /*public void payHosts(Integer streamingAccountId) {
+     public void payHostsCal(Integer streamingAccountId) {
+        String sql = "INSERT INTO paidHost (paid_host_id, amount, date, paid_streaming_account_id) " +
+                "SELECT DISTINCT PodcastHosts.host_id as paid_host_id, " +
+                "(10 + PodcastEpisodes.advertisement_count * 100) as amount, " +
+                "NOW() as date, " +
+                "? as paid_streaming_account_id " +
+                "FROM PodcastEpisodes " +
+                "INNER JOIN hosted ON PodcastEpisodes.podcast_episode_id = hosted.podcast_episode_id " +
+                "INNER JOIN PodcastHosts ON hosted.host_id = PodcastHosts.host_id";
 
+        PreparedStatement sm = null;
 
-    String sql = "INSERT INTO paidHost (paid_host_id, amount, date, paid_streaming_account_id) " +
-            "SELECT DISTINCT PodcastHosts.host_id as paid_host_id, " +
-            "(10 + PodcastEpisodes.advertisement_count * 100) as amount, " +
-            "NOW() as date, " +
-            "? as paid_streaming_account_id " +
-            "FROM PodcastEpisodes " +
-            "INNER JOIN hosted ON PodcastEpisodes.podcast_episode_id = hosted.podcast_episode_id " +
-            "INNER JOIN PodcastHosts ON hosted.host_id = PodcastHosts.host_id";
-
-    PreparedStatement sm = null;
-
-        try {
-        ResultSet rs = PaymentToHosts();
-        Float totalPayment = null;
-        rs.beforeFirst();
-        if (rs.next()) {
-            totalPayment = rs.getFloat("payment");
-        }
-
-        if (totalPayment == null) {
-            System.out.println("No available amount to pay");
-        } else {
-            connection.setAutoCommit(false);
-            sm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            if (streamingAccountId != null) {
-                sm.setInt(1, streamingAccountId);
-            } else {
-                sm.setNull(1, Types.INTEGER);
+            try {
+            ResultSet rs = PaymentToHosts();
+            Float totalPayment = null;
+            rs.beforeFirst();
+            if (rs.next()) {
+                totalPayment = rs.getFloat("payment");
             }
 
-
-            int rowsAffected = sm.executeUpdate();
-            if (rowsAffected == 0) {
-                System.out.println("Unable to Pay.");
+            if (totalPayment == null) {
+                System.out.println("No available amount to pay");
             } else {
-                updateManagementAccount(streamingAccountId, totalPayment * 1.0, true);
-                System.out.println("Paid Hosts Successfully");
-                connection.commit();
+                connection.setAutoCommit(false);
+                sm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                if (streamingAccountId != null) {
+                    sm.setInt(1, streamingAccountId);
+                } else {
+                    sm.setNull(1, Types.INTEGER);
+                }
+
+
+                int rowsAffected = sm.executeUpdate();
+                if (rowsAffected == 0) {
+                    System.out.println("Unable to Pay.");
+                } else {
+                    updateManagementAccount(streamingAccountId, totalPayment * 1.0, true);
+                    System.out.println("Paid Hosts Successfully");
+                    connection.commit();
+                }
             }
-        }
-    } catch (SQLException e) {
-        System.out.println("Error: " + e.getMessage());
-        try {
-            connection.rollback();
-            System.out.println("Rollback successful");
-        } catch (Exception e2) {
-            e.printStackTrace();
-        }
-    } finally {
-        try {
-            connection.setAutoCommit(true);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
+            try {
+                connection.rollback();
+                System.out.println("Rollback successful");
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
-}*/
 
 
 

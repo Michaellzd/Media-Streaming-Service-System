@@ -20,6 +20,7 @@ public class PaymentProcess {
             System.out.println("3. Make Payment to Podcast Hosts");
             System.out.println("4. Make (All) Monthly Payment to Artists and Record Labels");
             System.out.println("5. Receive Monthly Payment from Subscribers");
+            System.out.println("6. Calculate Payment Amount and Pay to Podcast Hosts");
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
@@ -40,6 +41,9 @@ public class PaymentProcess {
                     break;
                 case 5:
                     receiveSubFeeMenu(maintainPaymentsService, scanner);
+                    break;
+                case 6:
+                    payHostsCalMenu(maintainPaymentsService, scanner);
                     break;
 
             }
@@ -215,8 +219,8 @@ public class PaymentProcess {
     }
 
 
-    /* PAST version of pay host
-     private static void payHostsGivenMonthMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
+
+     private static void payHostsCalMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();
 
         System.out.print("Enter streaming account ID: ");
@@ -225,8 +229,7 @@ public class PaymentProcess {
 
         Integer streamingAccountId = Integer.parseInt(streamingAccountIdStr);
 
-        maintainPaymentsService.payHosts(streamingAccountId);
+        maintainPaymentsService.payHostsCal(streamingAccountId);
     }
-    * */
 
 }
