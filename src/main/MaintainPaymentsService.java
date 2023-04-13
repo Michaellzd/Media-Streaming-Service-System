@@ -27,6 +27,23 @@ public class MaintainPaymentsService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    
+    //pay Advert income
+    public void addAdvincome(String dateStr, double amount, int streamingAccountId) {
+        String sql = "INSERT INTO advertisementPay (date, advertisements_money, streaming_account_id) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDate(1, Date.valueOf(dateStr));
+            statement.setDouble(2, amount);
+            statement.setInt(3, streamingAccountId);
+            statement.executeUpdate();
+            updateManagementAccount(streamingAccountId, amount, false);
+
+            System.out.println("Data inserted successfully");
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    
 
     /**
      * After paying the Label, set the mark: isPaid As 'true' to avoid duplicated paid.
