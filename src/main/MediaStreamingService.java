@@ -8,13 +8,13 @@ import java.util.List;
 
 
 public class MediaStreamingService {
-
+    //connection
     protected final Connection connection;
 
     public MediaStreamingService(Connection connection) {
         this.connection = connection;
     }
-
+    //add song(JDBC)
     public void addSong(int songId, String songTitle, String duration, String genres, int playCount, String language, double royaltyRate, String releaseDate, String releaseCountry, Integer albumId) {
         String sql = "INSERT INTO Songs (song_id, song_title, duration, genres, play_count, language, royalty_rate, release_date, release_country, album) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -37,6 +37,7 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    //ASSIGN ARTIST TO SONG(!this is for the performed table)
 
     public void assignArtistToSong(String isCollaborator, int songId, int artistId) {
         String sql = "INSERT INTO performed (is_collaborator, song_id, artist_id) VALUES (?, ?, ?)";
@@ -49,7 +50,7 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    //update the song
     public void updateSong(int songId, String newSongTitle, String newDuration, String newGenres, Integer newPlayCount, String newLanguage, BigDecimal newRoyaltyRate, String newReleaseDate, String newReleaseCountry) {
         String sql = "UPDATE Songs SET song_title = COALESCE(?, song_title), duration = COALESCE(?, duration), genres = COALESCE(?, genres), play_count = COALESCE(?, play_count), language = COALESCE(?, language), royalty_rate = COALESCE(?, royalty_rate), release_date = COALESCE(?, release_date), release_country = COALESCE(?, release_country) WHERE song_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -113,7 +114,7 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    //update the podcast host(jdbc)
     public void updatePodcastHost(int hostId, String newFirstName, String newLastName, String newPhone, String newEmail, String newCity) {
         String sql = "UPDATE PodcastHosts SET first_name = COALESCE(?, first_name), last_name = COALESCE(?, last_name), phone = COALESCE(?, phone), email = COALESCE(?, email), city = COALESCE(?, city) WHERE host_id = ?";
 
@@ -160,7 +161,7 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    //update podcast episodes
     public void updatePodcastEpisode(int podcastEpisodeId, String newEpisodeTitle, String newDuration, String newReleaseDate, Integer newListeningCount, Integer newAdvertisementCount, Integer newPodcast) {
         String sql = "UPDATE PodcastEpisodes SET episode_title = COALESCE(?, episode_title), duration = COALESCE(?, duration), release_date = COALESCE(?, release_date), listening_count = COALESCE(?, listening_count), advertisement_count = COALESCE(?, advertisement_count), podcast = COALESCE(?, podcast) WHERE podcast_episode_id = ?";
 
@@ -213,7 +214,7 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    //update artsist
     public void updateArtist(int artistId, String newArtistName, String newStatus, Integer newMonthlyListener, String newType, String newCountry, String newPrimaryGenre) {
         String sql = "UPDATE Artists SET artist_name = COALESCE(?, artist_name), status = COALESCE(?, status), monthly_listener = COALESCE(?, monthly_listener), type = COALESCE(?, type), country = COALESCE(?, country), primary_genre = COALESCE(?, primary_genre) WHERE artist_id = ?";
 
@@ -266,7 +267,7 @@ public class MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
-
+    //delete song
     public void deleteSong(int songId) {
         // Remove artist associations in the 'performed' table
         String sqlRemoveArtists = "DELETE FROM performed WHERE song_id = ?";
@@ -286,7 +287,7 @@ public class MediaStreamingService {
             System.out.println("Error while deleting the song: " + e.getMessage());
         }
     }
-
+    
     public void deleteArtist(int artistId) {
         // Remove song associations in the 'performed' table
         String sqlRemoveSongs = "DELETE FROM performed WHERE artist_id = ?";
@@ -336,7 +337,7 @@ public class MediaStreamingService {
             System.out.println("Error while deleting the podcast episode: " + e.getMessage());
         }
     }
-
+    //add user(jdbc)
     public void addUser(int listener_id, String first_name, String last_name, String phone, String email, int status_of_subscription) {
         String sql = "INSERT INTO User (listener_id,first_name, last_name,phone,email,status_of_subscription) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -388,7 +389,7 @@ public class MediaStreamingService {
 //        }
 //
 //    }
-
+    //add podcastHost(jdbc)
     public void addPodcastHost(int host_id, String first_name, String last_name, String phone, String email, String city) {
 
         // Implement the logic to delete a song from the database
@@ -416,7 +417,7 @@ public class MediaStreamingService {
         }
 
     }
-
+    //Below are display(just select * from the specific table)
     public ResultSet listAllSongs() throws SQLException {
 
         String sql = "SELECT * FROM Songs";
@@ -455,7 +456,7 @@ public class MediaStreamingService {
         PreparedStatement pstmt = connection.prepareStatement(sql);
         return pstmt.executeQuery();
     }
-
+   
     public ResultSet reportPerArtists() throws SQLException {
         String sql = "SELECT Artists.artist_name, DATE_FORMAT(listenedSong.date, '%Y-%m') as yearmonth, COUNT(*) AS monthly_play_count FROM listenedSong INNER JOIN Songs ON listenedSong.song_id = Songs.song_id INNER JOIN performed ON performed.song_id = Songs.song_id INNER JOIN Artists ON Artists.artist_id = performed.artist_id GROUP BY yearmonth, Artists.artist_name";
         PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -822,7 +823,7 @@ public class MediaStreamingService {
     }
 
     //host to podcast above
-
+    //give a artist name and get songs(jdbc)
     public List<String> findSongsByArtist(String artistName) {
         List<String> songTitles = new ArrayList<>();
 
@@ -846,6 +847,7 @@ public class MediaStreamingService {
 
         return songTitles;
     }
+    //give a name of album-->songs(jdbc)
 
     public List<String> findSongsByAlbum(String albumName) {
         List<String> songTitles = new ArrayList<>();
@@ -869,7 +871,7 @@ public class MediaStreamingService {
 
         return songTitles;
     }
-
+    //give a name of podcast-->episode(jdbc)
     public List<String> findEpisodesByPodcast(String podcastName) {
         List<String> episodeTitles = new ArrayList<>();
 
