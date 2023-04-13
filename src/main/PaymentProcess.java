@@ -27,6 +27,8 @@ public class PaymentProcess {
             System.out.println("4. Make (All) Monthly Payment to Artists and Record Labels");
             System.out.println("5. Receive Monthly Payment from Subscribers");
             System.out.println("6. Calculate Payment Amount and Pay to Podcast Hosts");
+            System.out.println("7. Receive advertisements income");
+
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
@@ -51,11 +53,27 @@ public class PaymentProcess {
                 case 6:
                     payHostsCalMenu(maintainPaymentsService, scanner);
                     break;
+                 case 7:
+                    addAdvincome(maintainPaymentsService, scanner);
+                    break;
 
             }
         } while (choice != 0);
     }
+    //addadv income
+    private static void addAdvincome(MaintainPaymentsService maintainPaymentsService,Scanner scanner){
 
+        scanner.nextLine();
+
+        System.out.print("Enter date (in yyyy-mm-dd format): ");
+        String dateStr = scanner.nextLine();
+        System.out.print("Enter amount: ");
+        double amount = scanner.nextDouble();
+        System.out.print("Enter streaming account ID: ");
+        int streamingAccountId = scanner.nextInt();
+
+        maintainPaymentsService.addAdvincome(dateStr,amount,streamingAccountId);
+    }
     private static void makeMonthlyPaymentToArtistAndLabel(MaintainPaymentsService maintainPaymentsService,Scanner scanner){
         scanner.nextLine();
         List<String> monthWithDueToArtist = new ArrayList<>();
