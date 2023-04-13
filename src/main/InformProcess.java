@@ -98,7 +98,7 @@ public class InformProcess {
             }
         } while (choice != 0);
     }
-
+    //Assign Host to Podcast (Enter the specific name by the user)
     private void assignHostsToPodcastsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         scanner.nextLine();
 
@@ -117,6 +117,7 @@ public class InformProcess {
             System.out.println("Podcast EP or host not found. Please try again.");
         }
     }
+    //Assign Artists to Album (Enter the specific name by the user)
 
     private void assignArtistsToAlbumsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         scanner.nextLine();
@@ -134,7 +135,7 @@ public class InformProcess {
             System.out.println("Artist or album not found. Please try again.");
         }
     }
-
+    //Add the album (enter all information)
     private void addAlbum(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Album Id: ");
         int albumId = scanner.nextInt();
@@ -156,6 +157,7 @@ public class InformProcess {
         mediaStreamingService.addAlbum(albumId, albumName, trackNumber, releaseYear, edition);
     }
 
+    //The Podcast Ep menu (including add/updat/delete)
     private void managePodcastEpisodesMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
@@ -256,7 +258,7 @@ public class InformProcess {
             }
         } while (choice != 0);
     }
-
+    //add podcast(enter all information)
     private void addPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Podcast Id: ");
         int podcastId = scanner.nextInt();
@@ -291,7 +293,7 @@ public class InformProcess {
 
         mediaStreamingService.addPodcast(podcastId, podcastName, totalSubscribers, country, episodeCount, genres, language, sponsors, rating);
     }
-
+    //assign artist to recordLabel
     private void assignArtistsToRecordLabels(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.println("Enter artist name: ");
         scanner.nextLine();
@@ -309,6 +311,7 @@ public class InformProcess {
         }
 
     }
+       //The artist  menu (including add/updat/delete)
 
     private void manageArtistsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
 
@@ -397,7 +400,7 @@ public class InformProcess {
             }
         } while (choice != 0);
     }
-
+    //add record label(by user enter)
     private void addRecordLabel(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter Record Label Id: ");
         int recordLabelId = scanner.nextInt();
@@ -408,7 +411,7 @@ public class InformProcess {
 
         mediaStreamingService.addRecordLabel(recordLabelId, recordLabelName);
     }
-
+    //display podcast Episode information
     private void DisplayPodcastEpisode(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Podcast Episodes:");
         ResultSet resultSet = mediaStreamingService.listAllPodcastEpisodes();
@@ -432,7 +435,7 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
+    //dispaly podcasthost information
     private void DisplayPodcastHostMenu(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Podcast Hosts:");
         ResultSet resultSet = mediaStreamingService.listAllPodcastHosts();
@@ -455,7 +458,7 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
+    //display podcast information
     private void DisplayPodcastMenu(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Podcasts:");
         ResultSet resultSet = mediaStreamingService.listAllPodcast();
@@ -482,7 +485,7 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
+    //display artist information
     private void DisplayArtist(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Artists:");
         ResultSet resultSet = mediaStreamingService.listAllArtists();
@@ -508,7 +511,7 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
+    //display songs information
     private void DisplaySongs(MediaStreamingService mediaStreamingService) throws SQLException {
         System.out.println("All Songs:");
         ResultSet resultSet = mediaStreamingService.listAllSongs();
@@ -537,7 +540,7 @@ public class InformProcess {
             e.printStackTrace();
         }
     }
-
+    //menu of the song(add/update/delete)
     private void manageSongsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
@@ -680,7 +683,7 @@ public class InformProcess {
             }
         } while (choice != 0);
     }
-
+    //menu for the podcast host(add/update/delete)
     public void managePodcastHostsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
@@ -765,7 +768,7 @@ public class InformProcess {
 
 
     }
-
+    //add user
     public void addUser(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter User Id: ");
         int userId = scanner.nextInt();
