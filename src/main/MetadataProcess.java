@@ -3,7 +3,13 @@ package main;
 import java.util.List;
 import java.util.Scanner;
 
+
 public class MetadataProcess {
+    /**
+     * Generate Menu for metadata Processing.
+     * @param mediaStreamingService
+     * @param scanner
+     */
     public static void metadataAndRecordsMenu(MediaStreamingService mediaStreamingService, Scanner scanner) {
         int choice;
         do {
@@ -74,6 +80,11 @@ public class MetadataProcess {
 
     }
 
+    /**
+     * Emulate a user subscribe a Podcast. Add one subscribed record in record table.
+     * @param metadataService
+     * @param scanner
+     */
     private static void enterPodcastSubscribers(MetadataService metadataService, Scanner scanner) {
         System.out.println("Enter User id");
         int userId = scanner.nextInt();
@@ -84,6 +95,11 @@ public class MetadataProcess {
         metadataService.userSubscribedPodcast(userId, podcastId, date);
     }
 
+    /**
+     * Calculate the avg rating for all the podcast based on the existing rating records.
+     * @param metadataService
+     * @param scanner
+     */
     private static void updateRating(MetadataService metadataService, Scanner scanner) {
         System.out.print("Enter podcast id to update rating: ");
         int podcastId = scanner.nextInt();
@@ -91,6 +107,11 @@ public class MetadataProcess {
 
     }
 
+    /**
+     * Update the listenerCount Attribute in Artist table. Only count the current month listeners.
+     * @param metadataService
+     * @param scanner
+     */
     private static void updateArtistMonthlyListeners(MetadataService metadataService, Scanner scanner) {
 //        System.out.println("Enter the artist ID:");
 //        int artistId = scanner.nextInt();
@@ -99,6 +120,11 @@ public class MetadataProcess {
         metadataService.updateMonthlyListenerForArtists();
     }
 
+    /**
+     * Emulate a user rate a Podcast. Add one rating record in record table.
+     * @param metadataService
+     * @param scanner
+     */
     private static void enterPodcastRatings(MetadataService metadataService, Scanner scanner) {
         System.out.print("Enter podcast ID: ");
         int podcastId = scanner.nextInt();
@@ -113,6 +139,11 @@ public class MetadataProcess {
 
     }
 
+    /**
+     * Update the subscribers count Attribute in Podcast table. Count all record based on the subscribed table.
+     * @param metadataService
+     * @param scanner
+     */
     private static void updatePodcastSubscribers(MetadataService metadataService, Scanner scanner) {
         System.out.print("Enter the podcast id: ");
         int podcastId = scanner.nextInt();
@@ -120,6 +151,12 @@ public class MetadataProcess {
 
     }
 
+    /**
+     * Emulate a user listened a song. Each time a user listened song, a record would be inserted into the ListenedSong table.
+     * This is very important reference to make payment to Artists and Record Labels.
+     * @param metadataService
+     * @param scanner
+     */
     private static void enterPodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner) {
 
         System.out.println("Enter listener ID:");
@@ -134,6 +171,11 @@ public class MetadataProcess {
 
     }
 
+    /**
+     * Input the listening count of a record episode.
+     * @param metadataService
+     * @param scanner
+     */
     private static void updatePodcastEpisodeListeningCount(MetadataService metadataService, Scanner scanner) {
         System.out.println("Enter the podcast episode ID:");
         int episodeId = scanner.nextInt();
@@ -142,6 +184,11 @@ public class MetadataProcess {
         metadataService.updatePodcastEpisodeListeningCount(episodeId, date);
     }
 
+    /**
+     * List all the Episodes of specific podcast.
+     * @param mediaStreamingService
+     * @param scanner
+     */
     private static void findPodcastEpisodesGivenPodcast(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter the podcast name: ");
         scanner.nextLine();
@@ -155,6 +202,11 @@ public class MetadataProcess {
         }
     }
 
+    /**
+     * List all songs in specific album.
+     * @param mediaStreamingService
+     * @param scanner
+     */
     private static void findSongsGivenAlbum(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter the album name: ");
         scanner.nextLine();
@@ -168,6 +220,11 @@ public class MetadataProcess {
         }
     }
 
+    /**
+     * List all songs created by specific artist.
+     * @param mediaStreamingService
+     * @param scanner
+     */
     private static void findSongsGivenArtist(MediaStreamingService mediaStreamingService, Scanner scanner) {
         System.out.print("Enter the artist name: ");
         scanner.nextLine();
@@ -181,6 +238,11 @@ public class MetadataProcess {
         }
     }
 
+    /**
+     * inserted specific number of listening records in the listenedSong table.
+     * @param metadataService
+     * @param scanner
+     */
     private static void enterSongPlayCount(MetadataService metadataService, Scanner scanner) {
         System.out.println("Enter the user ID:");
         int userId = scanner.nextInt();
@@ -194,6 +256,11 @@ public class MetadataProcess {
         metadataService.addUserListenedSong(userId, songId, month, count);
     }
 
+    /**
+     * update the count Attribute in Songs table. The result was collected from listenedSong table and only calculate the CURRENT MONTH listening record.
+     * @param metadataService
+     * @param scanner
+     */
     private static void updateSongPlayCount(MetadataService metadataService, Scanner scanner) {
 //        System.out.println("Enter the song ID:");
 //        int songId = scanner.nextInt();

@@ -18,9 +18,8 @@ public class PaymentProcess {
             System.out.println("1. Make Monthly Payment to Record Label for Given Song");
             System.out.println("2. Make Monthly Payment to Artist for Given Song");
             System.out.println("3. Make Payment to Podcast Hosts");
-            System.out.println("4. Make Monthly Payment to All Artists");
-            System.out.println("5. Make Monthly Payment to All Label Records");
-            System.out.println("6. Receive Monthly Payment from Subscribers");
+            System.out.println("4. Make (All) Monthly Payment to Artists and Record Labels");
+            System.out.println("5. Receive Monthly Payment from Subscribers");
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
@@ -37,32 +36,52 @@ public class PaymentProcess {
                     payHostsGivenMonthMenu(maintainPaymentsService, scanner);
                     break;
                 case 4:
-                    makeMonthlyPaymentToArtist(maintainPaymentsService,scanner);
+                    makeMonthlyPaymentToArtistAndLabel(maintainPaymentsService,scanner);
                     break;
                 case 5:
-                    break;
-                case 6:
                     receiveSubFeeMenu(maintainPaymentsService, scanner);
                     break;
 
             }
         } while (choice != 0);
     }
-    private static void makeMonthlyPaymentToArtist(MaintainPaymentsService maintainPaymentsService,Scanner scanner){
-        List<Map<String,Object>>  paymentDueForSong = getPaymentForSongs(maintainPaymentsService,scanner);
+
+    private static void makeMonthlyPaymentToArtistAndLabel(MaintainPaymentsService maintainPaymentsService,Scanner scanner){
+        scanner.nextLine();
+        List<String> monthWithDueToArtist = new ArrayList<>();
+        List<String> monthWithDueToLabel = new ArrayList<>();
+        System.out.println("Enter song ID:");
+        int songId = scanner.nextInt();
+        System.out.println("Enter streaming account ID");
+        int accountId = scanner.nextInt();
+        List<Map<String,Object>> monthHasDueToArtist = getDueMonthToArtist(maintainPaymentsService,songId);
+        List<Map<String,Object>> monthHasDueToLabel = getDueMonthToLabel(maintainPaymentsService,songId);
         try {
             maintainPaymentsService.connection.setAutoCommit(false);
-            for (Map<String, Object> map : paymentDueForSong) {
+            for (Map<String, Object> map : monthHasDueToArtist) {
                 try {
-                    int song_id = (Integer) map.get("song_id");
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
                     Date date = dateFormat.parse((String) map.get("yearmonth"));
-                    Double due_payment = (Double) map.get("due_payment");
-
+                    monthWithDueToArtist.add(dateFormat.format(date));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
+            }
+            for (Map<String, Object> map : monthHasDueToLabel) {
+                try {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+                    Date date = dateFormat.parse((String) map.get("yearmonth"));
+                    monthWithDueToLabel.add(dateFormat.format(date));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            System.out.println(monthWithDueToArtist);
+            for (String yearmonth : monthWithDueToArtist) {
+                maintainPaymentsService.payArtistForGivenSongGivenMonth(songId,yearmonth,accountId);
+            }
+            for(String yearmonth : monthWithDueToLabel){
+                maintainPaymentsService.payLabelForGivenSongGivenMonth(songId,yearmonth,accountId);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -77,13 +96,39 @@ public class PaymentProcess {
 
     }
 
-    private static List<Map<String,Object>> getPaymentForSongs(MaintainPaymentsService maintainPaymentsService, Scanner scanner){
-        scanner.nextLine();
-        System.out.println("Enter song ID:");
+    private static List<Map<String,Object>> getDueMonthToArtist(MaintainPaymentsService maintainPaymentsService, int songId){
         List list = new ArrayList();
-        int songId = scanner.nextInt();
         try {
-            ResultSet resultSet = maintainPaymentsService.getDuePaymentOfGivenSong(songId);
+            ResultSet resultSet = maintainPaymentsService.getMonthHasDueToArtist(songId);
+            if(resultSet==null){
+                return list;
+            }
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            while(true){
+                Map<String,Object> rowData = new HashMap();
+                for (int i = 1; i <= columnCount; i++) {
+                    rowData.put(metaData.getColumnName(i),resultSet.getObject(i));
+                }
+                list.add(rowData);
+                if(!resultSet.next()){
+                    break;
+                };
+            }
+            System.out.println(list);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private static List<Map<String,Object>> getDueMonthToLabel(MaintainPaymentsService maintainPaymentsService,int songId){
+        List list = new ArrayList();
+        try {
+            ResultSet resultSet = maintainPaymentsService.getMonthHasDueToLabel(songId);
+            if(resultSet==null){
+                return list;
+            }
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             while(true){
@@ -161,7 +206,6 @@ public class PaymentProcess {
 
         maintainPaymentsService.payHosts(hostId, payment, month, streamingAccountId);
     }
-
 
     private static void receiveSubFeeMenu(MaintainPaymentsService maintainPaymentsService, Scanner scanner) {
         scanner.nextLine();

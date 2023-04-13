@@ -4,9 +4,19 @@ import java.math.BigDecimal;
 import java.sql.*;
 
 public class MaintainPaymentsService extends MediaStreamingService {
+    /**
+     * Constructor heritage from MediaStreamingService.
+     * @param connection
+     */
     public MaintainPaymentsService(Connection connection) {
         super(connection);
     }
+
+    /**
+     * After paying the Artist, set the mark: isPaid As 'true' to avoid duplicated paid.
+     * @param songId
+     * @param yearmonth
+     */
     public void setListenedSongToArtistIsPaid(int songId, String yearmonth){
         String sql = "UPDATE listenedSong SET isPaid = 'true' WHERE song_id = ? AND DATE_FORMAT(`date`, '%Y-%m') = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -17,6 +27,12 @@ public class MaintainPaymentsService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
+    /**
+     * After paying the Label, set the mark: isPaid As 'true' to avoid duplicated paid.
+     * @param songId
+     * @param yearmonth
+     */
     public void setListenedSongToLabelIsPaid(int songId, String yearmonth){
         String sql = "UPDATE listenedSong SET isPaidLabel = 'true' WHERE song_id = ? AND DATE_FORMAT(`date`, '%Y-%m') = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -27,6 +43,12 @@ public class MaintainPaymentsService extends MediaStreamingService {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
+    /**
+     * Get the due payment to Artist group by Month. (isPaid listening record would not be counted.)
+     * @param songId
+     * @return
+     */
     public ResultSet monthlyPaymentForGivenSongForArtist(int songId) {
         String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m') AS yearmonth, s.song_title \n" +
                 "  FROM listenedSong l LEFT JOIN Songs s ON l.song_id =s.song_id \n" +
@@ -43,6 +65,12 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
         return null;
     }
+
+    /**
+     * Get the due payment to Record Label group by Month. (isPaidLabel listening record would not be counted.)
+     * @param songId
+     * @return
+     */
     public ResultSet monthlyPaymentForGivenSongForLabel(int songId) {
         String sql = "SELECT COUNT(*)*s.royalty_rate payment, DATE_FORMAT(`date`,'%Y-%m') AS yearmonth, s.song_title \n" +
                 "  FROM listenedSong l LEFT JOIN Songs s ON l.song_id =s.song_id \n" +
@@ -59,6 +87,15 @@ public class MaintainPaymentsService extends MediaStreamingService {
         }
         return null;
     }
+
+    /**
+     * To confirm whether the streaming account has enough deposit to make the payment.
+     * And make update to the manage account.
+     * @param streamingAccountId
+     * @param amount
+     * @param isMinus
+     * @throws SQLException
+     */
     public void updateManagementAccount(int streamingAccountId, Double amount, Boolean isMinus) throws SQLException {
         String sql = "UPDATE theMediaStreamingManagement SET balance = IF(?, balance - ?, balance + ?) WHERE streaming_account_id = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
@@ -89,28 +126,27 @@ public class MaintainPaymentsService extends MediaStreamingService {
 //            System.out.println("Error: " + e.getMessage());
 //        }
     }
+    /**
+     * Description: Generate monthly payment to record labels.
+     */
 
+    /**
+     * Payment process includes 2 steps:
+     * 1. insert payment information into paidLabel table;
+     * 2. update management account balance.
+     * The two steps should be either both successfully executed or both not,
+     * so we use transaction here.
+     *
+     * Transaction Logic:
+     * 1. Set auto_commit to false;
+     * 2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
+     * 3. If step 2 throws out exception, rollback;
+     *    ( Notice that we encapsulated step 2 into function updateManagementAccount,
+     *      which would throw out exceptions if step 2 failed. )
+     * 4. Otherwise, step 1 and step 2 were both executed successfully, commit;
+     * 5. Set auto_commit back to true.
+     */
     public void payLabelForGivenSongGivenMonth(Integer songId, String yearmonth, Integer streamingAccountId) {
-        /**
-         * Description: Generate monthly payment to record labels.
-         */
-
-        /**
-         * Payment process includes 2 steps:
-         * 1. insert payment information into paidLabel table;
-         * 2. update management account balance.
-         * The two steps should be either both successfully executed or both not,
-         * so we use transaction here.
-         *
-         * Transaction Logic:
-         * 1. Set auto_commit to false;
-         * 2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
-         * 3. If step 2 throws out exception, rollback;
-         *    ( Notice that we encapsulated step 2 into function updateManagementAccount,
-         *      which would throw out exceptions if step 2 failed. )
-         * 4. Otherwise, step 1 and step 2 were both executed successfully, commit;
-         * 5. Set auto_commit back to true.
-         */
 
         String sql = "INSERT INTO paidLabel (paid_streaming_account_id, paid_record_label_id, amount, date) " +
                 "SELECT ? as paid_streaming_account_id, " +
@@ -238,7 +274,6 @@ public class MaintainPaymentsService extends MediaStreamingService {
                 if (yearmonth != null) {
                     sm.setString(3, yearmonth + "-28");
                     sm.setString(5, yearmonth);
-//                sm1.setString(2, yearmonth);
                 } else {
                     sm.setNull(3, Types.DATE);
                     sm.setNull(5, Types.DATE);
@@ -288,6 +323,13 @@ public class MaintainPaymentsService extends MediaStreamingService {
         return null;
     }
 
+    /**
+     * make payment to host. Need the user specify the payment amount.
+     * @param hostId
+     * @param payment
+     * @param month
+     * @param streamingAccountId
+     */
     public void payHosts(Integer hostId, BigDecimal payment, String month, Integer streamingAccountId) {
         String sql = "INSERT INTO paidHost (paid_host_id, amount, date, paid_streaming_account_id) " +
                 "VALUES (?, ?, ?, ?)";
@@ -324,26 +366,25 @@ public class MaintainPaymentsService extends MediaStreamingService {
             }
         }
     }
+    /**
+     * Description: Receive monthly payment from subscribers
+     * Assumption: The subscribers' payment is received by account 1
+     */
 
-
+    /**
+     * Payment process includes 2 steps: 1. insert payment information into paidService table;
+     *                                   2. update management account balance.
+     * The two steps should be either both successfully executed or both not, so we use transaction here.
+     * Transaction Logic: 1. Set auto_commit to false;
+     *                    2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
+     *                    3. If step 2 throws out exception, rollback;
+     *                       ( Notice that we encapsulated step 2 into function updateManagementAccount,
+     *                       which would throw out exceptions if step 2 failed. )
+     *                    4. Otherwise, step 1 and step 2 were both executed successfully, commit;
+     *                   `5. Set auto_commit back to true.
+     */
     public void receiveSubFee(String month) {
-        /**
-         * Description: Receive monthly payment from subscribers
-         * Assumption: The subscribers' payment is received by account 1
-         */
 
-        /**
-         * Payment process includes 2 steps: 1. insert payment information into paidService table;
-         *                                   2. update management account balance.
-         * The two steps should be either both successfully executed or both not, so we use transaction here.
-         * Transaction Logic: 1. Set auto_commit to false;
-         *                    2. Try step 1 first, if exception occurs, rollback, otherwise try step 2;
-         *                    3. If step 2 throws out exception, rollback;
-         *                       ( Notice that we encapsulated step 2 into function updateManagementAccount,
-         *                       which would throw out exceptions if step 2 failed. )
-         *                    4. Otherwise, step 1 and step 2 were both executed successfully, commit;
-         *                   `5. Set auto_commit back to true.
-         */
         String sql1 = "SELECT COUNT(*) FROM User WHERE status_of_subscription = 1";
         String sql2 =  "INSERT INTO paidService (monthly_subscription_fee, date, paid_user_id, paid_streaming_account_id) " +
                 "SELECT DISTINCT 10.0 as monthly_subscription_fee, " +
@@ -421,7 +462,7 @@ public class MaintainPaymentsService extends MediaStreamingService {
         return null;
     }
 
-    public ResultSet getMonthHasDue(int songId){
+    public ResultSet getMonthHasDueToArtist(int songId){
         String sql = "SELECT DISTINCT(DATE_FORMAT(`date`,'%Y-%m')) yearmonth FROM listenedSong ls WHERE song_id = ? AND isPaid='false'; \n";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, songId);
@@ -435,6 +476,19 @@ public class MaintainPaymentsService extends MediaStreamingService {
         return null;
     }
 
+    public ResultSet getMonthHasDueToLabel(int songId){
+        String sql = "SELECT DISTINCT(DATE_FORMAT(`date`,'%Y-%m')) yearmonth FROM listenedSong ls WHERE song_id = ? AND isPaidLabel='false'; \n";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, songId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
 
 
 

@@ -61,7 +61,7 @@ public class MetadataService extends MediaStreamingService {
 
     public void addUserListenedSong(int listenerId, int songId, String month, int listenCount) {
         String date = month + "-01"; // 将月份转换为日期格式
-        String sql = "INSERT INTO listenedSong (listener_id, song_id, date) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO listenedSong (listener_id, song_id, date, isPaid, isPaidLabel) VALUES (?, ?, ?, 'false','false')";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             for (int i = 0; i < listenCount; i++) {
