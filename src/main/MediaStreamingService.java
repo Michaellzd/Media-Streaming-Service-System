@@ -648,7 +648,8 @@ public class MediaStreamingService {
             statement.setString(1, epname);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getInt("podcast_episode_id");
+//                return resultSet.getInt("podcast_episode_id");
+                return resultSet.getInt(1);
             }
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
